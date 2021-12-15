@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { v4 as uuid } from 'uuid';
+
 import { CreateHopeInput } from './create-hope.input';
 import { Hope } from './hope.entity';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class HopeService {
   constructor(
     @InjectRepository(Hope) private hopeRepository: Repository<Hope>,
   ) {}
+
+  async getHopes(): Promise<Hope[]> {
+    return await this.hopeRepository.find();
+  }
 
   async createHope(createHopeInput: CreateHopeInput): Promise<Hope> {
     const { subject, description, createdAt } = createHopeInput;
@@ -21,6 +26,6 @@ export class HopeService {
       createdAt,
     });
 
-    return this.hopeRepository.save(hope);
+    return await this.hopeRepository.save(hope);
   }
 }

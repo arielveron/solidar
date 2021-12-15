@@ -18,6 +18,11 @@ export class HopeResolver {
     };
   }
 
+  @Query((returns) => [HopeType])
+  hopes(): Promise<Hope[]> {
+    return this.hopeService.getHopes();
+  }
+
   @Mutation((returns) => HopeType)
   createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
