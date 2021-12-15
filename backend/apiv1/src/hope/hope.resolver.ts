@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CreateHopeInput } from './create-hope.input';
+import { Hope } from './hope.entity';
 import { HopeService } from './hope.service';
 import { HopeType } from './hope.type';
 
@@ -14,5 +16,12 @@ export class HopeResolver {
       description: 'This is just a dummy hope, but is the first one',
       createdAt: '2021-12-14',
     };
+  }
+
+  @Mutation((returns) => HopeType)
+  createHope(
+    @Args('createHopeInput') createHopeInput: CreateHopeInput,
+  ): Promise<Hope> {
+    return this.hopeService.createHope(createHopeInput);
   }
 }
