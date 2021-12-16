@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
@@ -27,9 +31,17 @@ export class HopeService {
       createdAt: new Date().toISOString(),
     });
 
-    this.logger.log(`Created Hope: ${hope.subject}`);
-    this.logger.verbose(`Created Hope: ${JSON.stringify(hope)}`);
-
-    return await this.hopeRepository.save(hope);
+    try {
+      const savedHope = await this.hopeRepository.save(hope);
+      this.logger.log(`Created Hope: ${hope.subject}`);
+      this.logger.verbose(`Created Hope: ${JSON.stringify(hope)}`);
+      return savedHope;
+    } catch (error) {
+      this.logger.error(
+        `Failed to save hope "${createHopeInput.subject}"`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Error saving to DB');
+    }
   }
 }
