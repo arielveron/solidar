@@ -1,4 +1,5 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
@@ -10,7 +11,9 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
 
-  const listeningPort = 3000;
+  const configService = app.get(ConfigService);
+
+  const listeningPort = configService.get('API_PORT');
   await app.listen(listeningPort);
   logger.log(`Solidar API listening on port ${listeningPort}`);
 }
