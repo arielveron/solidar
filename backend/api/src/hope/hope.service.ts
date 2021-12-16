@@ -17,13 +17,13 @@ export class HopeService {
   }
 
   async createHope(createHopeInput: CreateHopeInput): Promise<Hope> {
-    const { subject, description, createdAt } = createHopeInput;
+    const { subject, description } = createHopeInput;
 
     const hope = this.hopeRepository.create({
       id: uuid(),
       subject,
       description,
-      createdAt,
+      createdAt: new Date().toISOString(),
     });
 
     return await this.hopeRepository.save(hope);

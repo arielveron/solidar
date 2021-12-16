@@ -10,7 +10,4 @@ export class CreateHopeInput {
   @MinLength(5)
   @Field()
   description: string;
-
-  @Field()
-  createdAt: string;
 }
