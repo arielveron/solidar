@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { configValidationSchema } from './config.schema';
 import { Hope } from './hope/hope.entity';
 import { HopeModule } from './hope/hope.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: [`.env.stage.${process.env.STAGE}`],
+      validationSchema: configValidationSchema,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
