@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configValidationSchema } from './config.schema';
 import { Hope } from './hope/hope.entity';
 import { HopeModule } from './hope/hope.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { HopeModule } from './hope/hope.module';
     }),
     GraphQLModule.forRoot({ autoSchemaFile: true }),
     HopeModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
