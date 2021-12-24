@@ -6,6 +6,7 @@ import { configValidationSchema } from './config.schema';
 import { Hope } from './hope/models/hope.entity';
 import { HopeModule } from './hope/hope.module';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
     GraphQLModule.forRoot({ autoSchemaFile: true }),
     HopeModule,
     AuthModule,
+    UserModule,
   ],
 })
 export class AppModule {}
