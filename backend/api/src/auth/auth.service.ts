@@ -14,20 +14,21 @@ export class AuthService {
 
     const valid = await bcrypt.compare(password, user?.password);
     if (user && valid) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      return {
+        username: user.username,
+      };
     }
     return null;
   }
 
-  // to enable using mock DB
+  // to enable using mock DB -- remove when proper DB is implemented
   createPass(password: string): string {
     const hashedPass = bcrypt.hashSync(password, 10);
     return hashedPass;
   }
 
   async login(username: string): Promise<LoginResponse> {
+    // TODO: use a type to put JWT data
     const result: LoginResponse = {
       access_token: this.jwtService.sign({
         username: username,
