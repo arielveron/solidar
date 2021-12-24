@@ -1,5 +1,5 @@
-import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Logger, UseGuards } from '@nestjs/common';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateHopeInput } from './dto/create-hope.input';
 import { Hope } from './models/hope.entity';
@@ -8,7 +8,10 @@ import { HopeType } from './models/hope.type';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
+  private logger = new Logger('HopeResolver');
+
   constructor(private hopeService: HopeService) {}
+
   @Query(() => HopeType)
   hope() {
     return {
@@ -21,7 +24,10 @@ export class HopeResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [HopeType])
-  hopes(): Promise<Hope[]> {
+  hopes(@Context() ctx): Promise<Hope[]> {
+    const user = ctx.req.user.username;
+    this.logger.log(`User "${user}" requested all the Hopes`);
+
     return this.hopeService.getHopes();
   }
 
