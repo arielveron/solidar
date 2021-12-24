@@ -57,6 +57,7 @@
     "@types/mongodb": "^4.0.7",
     "@types/node": "^16.0.0",
     "@types/passport-jwt": "^3.0.6",
+    "@types/passport-local": "^1.0.34",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
