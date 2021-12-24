@@ -7,8 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
-import { CreateHopeInput } from './create-hope.input';
-import { Hope } from './hope.entity';
+import { CreateHopeInput } from './dto/create-hope.input';
+import { Hope } from './models/hope.entity';
 
 @Injectable()
 export class HopeService {

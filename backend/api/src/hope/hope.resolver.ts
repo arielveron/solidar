@@ -1,10 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateHopeInput } from './create-hope.input';
-import { Hope } from './hope.entity';
+import { CreateHopeInput } from './dto/create-hope.input';
+import { Hope } from './models/hope.entity';
 import { HopeService } from './hope.service';
-import { HopeType } from './hope.type';
+import { HopeType } from './models/hope.type';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
