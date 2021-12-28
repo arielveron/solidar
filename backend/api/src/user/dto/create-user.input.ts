@@ -5,7 +5,7 @@ import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 export class CreateUserInput {
   @Field()
   @IsString()
-  @MinLength(3)
+  @MinLength(5)
   @MaxLength(16)
   username: string;
 
@@ -21,9 +21,13 @@ export class CreateUserInput {
 
   @Field()
   @IsString()
+  @MinLength(2)
+  @MaxLength(32)
   firstName: string;
 
   @Field()
   @IsString()
+  @MinLength(2)
+  @MaxLength(32)
   lastName: string;
 }
