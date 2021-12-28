@@ -30,4 +30,8 @@ export class UserService {
     const userCreated: User = this.userRepository.create(user);
     return this.userRepository.save(userCreated);
   }
+
+  async findOne(username: string): Promise<User> {
+    return this.userRepository.findOne({ username });
+  }
 }
