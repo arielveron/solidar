@@ -18,4 +18,12 @@ export class CreateUserInput {
       'Password must include at least 1 number, 1 lowercase and 1 uppercase characters',
   })
   password: string;
+
+  @Field()
+  @IsString()
+  firstName: string;
+
+  @Field()
+  @IsString()
+  lastName: string;
 }

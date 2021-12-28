@@ -7,6 +7,7 @@ import { Hope } from './hope/models/hope.entity';
 import { HopeModule } from './hope/hope.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +23,7 @@ import { UserModule } from './user/user.module';
           url: configService.get('DB_URL'),
           synchronize: true, // this is not intended to be used on production
           useUnifiedTopology: true,
-          entities: [Hope],
+          entities: [Hope, User],
         };
       },
     }),
