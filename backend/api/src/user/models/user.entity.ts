@@ -20,4 +20,7 @@ export class User {
 
   @Column()
   lastName: string;
+
+  @Column()
+  isAdmin: boolean;
 }

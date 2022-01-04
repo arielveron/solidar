@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CreateUserInput } from './dto/create-user.input';
-import { CreateUserReturn } from './dto/create-user.return';
+import { UserType } from './models/user.type';
 import { UserService } from './user.service';
 
 @Resolver()
@@ -9,10 +9,10 @@ export class UserResolver {
   private logger = new Logger('UserResolver');
   constructor(private userService: UserService) {}
 
-  @Mutation(() => CreateUserReturn)
+  @Mutation(() => UserType)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
-  ): Promise<CreateUserReturn> {
+  ): Promise<UserType> {
     return this.userService.createUser(createUserInput);
   }
 }
