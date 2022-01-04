@@ -12,23 +12,19 @@ export class HopeResolver {
 
   constructor(private hopeService: HopeService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => HopeType)
-  hope() {
-    return {
-      id: 'j4lk23jpo8adc',
-      subject: 'This is a test',
-      description: 'This is just a dummy hope, but is the first one',
-      createdAt: '2021-12-14',
-    };
+  hope(@Args('id') id: string): Promise<Hope> {
+    return this.hopeService.getHope(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [HopeType])
-  async hopes(@Context() ctx): Promise<Hope[]> {
+  hopes(@Context() ctx): Promise<Hope[]> {
     const user = ctx.req.user.username;
     this.logger.log(`User "${user}" requested all the Hopes`);
 
-    return await this.hopeService.getHopes();
+    return this.hopeService.getHopes();
   }
 
   @Mutation(() => HopeType)

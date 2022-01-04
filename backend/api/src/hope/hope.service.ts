@@ -18,6 +18,10 @@ export class HopeService {
   ) {}
   private logger = new Logger('HopeService');
 
+  async getHope(id: string): Promise<Hope> {
+    return await this.hopeRepository.findOne({ id: id });
+  }
+
   async getHopes(): Promise<Hope[]> {
     return await this.hopeRepository.find();
   }
