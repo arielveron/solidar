@@ -4,6 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserType } from 'src/user/models/user.type';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
@@ -21,14 +22,19 @@ export class HopeService {
     return await this.hopeRepository.find();
   }
 
-  async createHope(createHopeInput: CreateHopeInput): Promise<Hope> {
+  async createHope(
+    createHopeInput: CreateHopeInput,
+    user: UserType,
+  ): Promise<Hope> {
     const { subject, description } = createHopeInput;
 
     const hope = this.hopeRepository.create({
       id: uuid(),
       subject,
       description,
+      isPublished: true,
       createdAt: new Date().toISOString(),
+      authorId: user.id,
     });
 
     try {

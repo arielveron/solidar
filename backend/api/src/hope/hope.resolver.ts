@@ -24,17 +24,20 @@ export class HopeResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [HopeType])
-  hopes(@Context() ctx): Promise<Hope[]> {
+  async hopes(@Context() ctx): Promise<Hope[]> {
     const user = ctx.req.user.username;
     this.logger.log(`User "${user}" requested all the Hopes`);
 
-    return this.hopeService.getHopes();
+    return await this.hopeService.getHopes();
   }
 
   @Mutation(() => HopeType)
+  @UseGuards(JwtAuthGuard)
   createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
+    @Context() context,
   ): Promise<Hope> {
-    return this.hopeService.createHope(createHopeInput);
+    this.logger.log(context.req.user);
+    return this.hopeService.createHope(createHopeInput, context.req.user);
   }
 }

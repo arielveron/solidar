@@ -16,4 +16,10 @@ export class Hope {
 
   @Column()
   createdAt: string;
+
+  @Column()
+  isPublished: boolean;
+
+  @Column()
+  authorId: string;
 }

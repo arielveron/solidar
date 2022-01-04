@@ -1,11 +1,13 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class LoginResponse {
+export class JwtPayload {
   @Field()
-  access_token: string;
+  id: string;
 
   @Field()
   username: string;
-  // user: User;
+
+  @Field()
+  isAdmin: boolean;
 }

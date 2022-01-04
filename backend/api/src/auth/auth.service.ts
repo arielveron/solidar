@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { User } from '../user/models/user.entity';
 import { UserService } from '../user/user.service';
+import { JwtPayload } from './dto/jwt.payload';
 import { LoginResponse } from './dto/login-response';
 
 @Injectable()
@@ -25,11 +27,19 @@ export class AuthService {
 
   async login(username: string): Promise<LoginResponse> {
     // TODO: use a type to put JWT data
+    const user: User = await this.userService.findOne(username);
+
+    const payload: JwtPayload = {
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+
     const result: LoginResponse = {
       access_token: this.jwtService.sign({
-        username: username,
+        ...payload,
       }),
-      user: username,
+      username: username,
     };
 
     return result;

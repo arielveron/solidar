@@ -14,4 +14,10 @@ export class HopeType {
 
   @Field()
   createdAt: string;
+
+  @Field()
+  isPublished: boolean;
+
+  @Field()
+  authorId: string;
 }
