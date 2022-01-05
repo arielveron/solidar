@@ -8,6 +8,7 @@ import { HopeModule } from './hope/hope.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/models/user.entity';
+import { CaslModule } from './casl/casl.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,7 @@ import { User } from './user/models/user.entity';
     HopeModule,
     AuthModule,
     UserModule,
+    CaslModule,
   ],
 })
 export class AppModule {}
