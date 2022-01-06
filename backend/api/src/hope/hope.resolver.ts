@@ -26,7 +26,7 @@ export class HopeResolver {
 
     const user: User = ctx.req.user;
     const ability = this.caslAbilityFactory.createForUser(user);
-    console.log('can delete?', ability.can(Action.Delete, hope));
+    console.log('can read?', ability.can(Action.Read, hope));
 
     console.log();
 

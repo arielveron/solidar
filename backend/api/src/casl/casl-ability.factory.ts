@@ -25,6 +25,10 @@ export class CaslAbilityFactory {
       can(Action.Manage, 'all'); // read-write access to everything
     } else {
       can(Action.Read, Hope);
+      cannot(Action.Read, Hope, {
+        isPublished: false,
+        authorId: { $ne: user.id },
+      });
     }
 
     can(Action.Update, Hope, { authorId: user.id });
