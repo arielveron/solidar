@@ -3,19 +3,23 @@ import {
   AbilityBuilder,
   AbilityClass,
   ExtractSubjectType,
+  ForbiddenError,
   InferSubjects,
 } from '@casl/ability';
-import { Injectable } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Action } from '../auth/actions/action.enum';
 import { Hope } from '../hope/models/hope.entity';
 import { User } from '../user/models/user.entity';
 
-type Subjects = InferSubjects<typeof Hope | typeof User> | 'all';
+export type Subjects = InferSubjects<typeof Hope | typeof User> | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
 
 @Injectable()
 export class CaslAbilityFactory {
+  private logger = new Logger('CASL Factory');
+
   createForUser(user: User) {
     const { can, cannot, build } = new AbilityBuilder<
       Ability<[Action, Subjects]>
@@ -28,7 +32,7 @@ export class CaslAbilityFactory {
       cannot(Action.Read, Hope, {
         isPublished: false,
         authorId: { $ne: user.id },
-      });
+      }).because('Access denied');
     }
 
     can(Action.Update, Hope, { authorId: user.id });
@@ -39,5 +43,23 @@ export class CaslAbilityFactory {
       detectSubjectType: (item) =>
         item.constructor as ExtractSubjectType<Subjects>,
     });
+  }
+
+  checkPolicy(user: User, action: Action, subject: Subjects) {
+    const ability = this.createForUser(user);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(action, subject);
+      return true;
+    } catch (error) {
+      if (error instanceof ForbiddenError) {
+        this.logger.verbose(
+          `User "${
+            user.username
+          }" was denied to read Subject: "${JSON.stringify(subject)}"`,
+        );
+        throw new ForbiddenException(error.message);
+      }
+    }
   }
 }

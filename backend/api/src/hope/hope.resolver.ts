@@ -5,10 +5,10 @@ import { CreateHopeInput } from './dto/create-hope.input';
 import { Hope } from './models/hope.entity';
 import { HopeService } from './hope.service';
 import { HopeType } from './models/hope.type';
-// import { JwtPayload } from '../auth/dto/jwt.payload';
-import { CaslAbilityFactory } from '../casl/casl-ability.factory';
+import { AppAbility, CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { User } from '../user/models/user.entity';
 import { Action } from '../auth/actions/action.enum';
+import { CheckPolicies } from 'src/casl/check-policies.decorator';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
@@ -20,27 +20,22 @@ export class HopeResolver {
   ) {}
 
   @UseGuards(JwtAuthGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => HopeType)
   async hope(@Args('id') id: string, @Context() ctx): Promise<Hope> {
     const hope: Hope = await this.hopeService.getHope(id);
 
     const user: User = ctx.req.user;
-    const ability = this.caslAbilityFactory.createForUser(user);
-    console.log('can read?', ability.can(Action.Read, hope));
-
-    console.log();
+    this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
 
     return hope;
   }
 
   @UseGuards(JwtAuthGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => [HopeType])
   hopes(@Context() ctx): Promise<Hope[]> {
-    // const user = ctx.req.user.username;
     const user: User = ctx.req.user;
-
-    const ability = this.caslAbilityFactory.createForUser(user);
-    console.log('can request?', ability.can(Action.Read, Hope));
 
     this.logger.log(`User "${user.username}" requested all the Hopes`);
 
