@@ -14,7 +14,9 @@ export class UserService {
   ) {}
 
   async createUser(createUserInput: CreateUserInput): Promise<UserType> {
-    const hashedPass = await bcrypt.hash(createUserInput.password, 10);
+    const hashedPass: string = await this.doHashPassword(
+      createUserInput.password,
+    );
 
     const user: User = {
       _id: null,
@@ -32,5 +34,13 @@ export class UserService {
 
   async findOne(username: string): Promise<User> {
     return this.userRepository.findOne({ username });
+  }
+
+  private async doHashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPass = await bcrypt.hash(password, salt);
+
+    return hashedPass;
   }
 }
