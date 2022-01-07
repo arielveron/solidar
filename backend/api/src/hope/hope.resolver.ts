@@ -1,6 +1,7 @@
 import { Logger, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PoliciesGuard } from '../casl/policies.guard';
 import { CreateHopeInput } from './dto/create-hope.input';
 import { Hope } from './models/hope.entity';
 import { HopeService } from './hope.service';
@@ -19,19 +20,22 @@ export class HopeResolver {
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  /// Get a specified Hope
+
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => HopeType)
   async hope(@Args('id') id: string, @Context() ctx): Promise<Hope> {
     const hope: Hope = await this.hopeService.getHope(id);
-
     const user: User = ctx.req.user;
-    this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
 
+    this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
     return hope;
   }
 
-  @UseGuards(JwtAuthGuard)
+  /// Get Hopes
+
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => [HopeType])
   hopes(@Context() ctx): Promise<Hope[]> {
@@ -42,13 +46,19 @@ export class HopeResolver {
     return this.hopeService.getHopes();
   }
 
+  /// Create a hope
+
   @Mutation(() => HopeType)
-  @UseGuards(JwtAuthGuard)
-  createHope(
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Hope))
+  async createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
-    @Context() context,
+    @Context() ctx,
   ): Promise<Hope> {
-    this.logger.log(context.req.user);
-    return this.hopeService.createHope(createHopeInput, context.req.user);
+    const hope: Hope = await this.hopeService.createHope(
+      createHopeInput,
+      ctx.req.user,
+    );
+    return hope;
   }
 }

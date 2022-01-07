@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { AppAbility, CaslAbilityFactory } from './casl-ability.factory';
 import { CHECK_POLICIES_KEY } from './check-policies.decorator';
 import { PolicyHandler } from './policy-handler.interface';
@@ -18,7 +19,7 @@ export class PoliciesGuard implements CanActivate {
         context.getHandler(),
       ) || [];
 
-    const { user } = context.switchToHttp().getRequest();
+    const { user } = this.getRequest(context);
     const ability = this.caslAbilityFactory.createForUser(user);
 
     return policyHandlers.every((handler) =>
@@ -26,10 +27,17 @@ export class PoliciesGuard implements CanActivate {
     );
   }
 
+  /// private methods ///
+
   private execPolicyHandler(handler: PolicyHandler, ability: AppAbility) {
     if (typeof handler === 'function') {
       return handler(ability);
     }
     return handler.handle(ability);
+  }
+
+  private getRequest(context: ExecutionContext) {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
   }
 }
