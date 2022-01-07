@@ -36,6 +36,12 @@ export class UserService {
     return this.userRepository.findOne({ username });
   }
 
+  async listUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  // Private methods
+
   private async doHashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);

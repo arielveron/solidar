@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -12,7 +12,6 @@ import { LocalStrategy } from './strategies/local.strategy';
   imports: [
     PassportModule,
     ConfigModule,
-    UserModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -21,6 +20,7 @@ import { LocalStrategy } from './strategies/local.strategy';
         signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
       }),
     }),
+    forwardRef(() => UserModule),
   ],
   providers: [AuthResolver, AuthService, LocalStrategy, JwtStrategy],
 })
