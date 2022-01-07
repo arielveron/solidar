@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/models/user.entity';
 import { CaslModule } from './casl/casl.module';
+import { NgoModule } from './ngo/ngo.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { CaslModule } from './casl/casl.module';
     AuthModule,
     UserModule,
     CaslModule,
+    NgoModule,
   ],
 })
 export class AppModule {}
