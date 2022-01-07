@@ -1,5 +1,5 @@
-import { Logger, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Logger, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateUserInput } from './dto/create-user.input';
 import { UserType } from './models/user.type';
 import { UserService } from './user.service';
@@ -27,7 +27,14 @@ export class UserResolver {
   @Query(() => [UserType])
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, User))
-  listUsers(): Promise<UserType[]> {
+  listUsers(@Context() ctx): Promise<UserType[]> {
+    // temporarily allow access to read users only to Admins
+    // later this endpoint can automatically list the users linked to a NGO if the user is a NGOAdmin
+    const user: User = ctx.req.user;
+    if (!user.isAdmin) {
+      throw new UnauthorizedException();
+    }
+
     return this.userService.listUsers();
   }
 }
