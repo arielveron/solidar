@@ -1,5 +1,5 @@
 import { UserType } from '../../user/models/user.type';
-import { Column, Entity, ObjectIdColumn, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, ObjectIdColumn, PrimaryColumn } from 'typeorm';
 
 Entity();
 export class Ngo {
@@ -11,6 +11,7 @@ export class Ngo {
   id: string;
 
   // descriptive properties
+  @Index({ unique: true })
   @Column()
   ngoName: string;
 
