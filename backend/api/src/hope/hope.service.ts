@@ -32,19 +32,22 @@ export class HopeService {
   ): Promise<Hope> {
     const { subject, description } = createHopeInput;
 
-    const hope = this.hopeRepository.create({
+    const hope: Hope = {
+      _id: null,
       id: uuid(),
       subject,
       description,
       isPublished: true,
       createdAt: new Date().toISOString(),
       authorId: user.id,
-    });
+    };
+
+    const createdHope = this.hopeRepository.create(hope);
 
     try {
-      const savedHope = await this.hopeRepository.save(hope);
-      this.logger.log(`Created Hope: ${hope.subject}`);
-      this.logger.verbose(`Created Hope: ${JSON.stringify(hope)}`);
+      const savedHope = await this.hopeRepository.save(createdHope);
+      this.logger.log(`Created Hope: ${createdHope.subject}`);
+      this.logger.verbose(`Created Hope: ${JSON.stringify(createdHope)}`);
       return savedHope;
     } catch (error) {
       this.logger.error(

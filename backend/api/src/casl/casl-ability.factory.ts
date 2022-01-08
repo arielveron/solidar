@@ -28,6 +28,8 @@ export class CaslAbilityFactory {
     if (user.isAdmin) {
       can(Action.Manage, 'all'); // read-write access to everything
     } else {
+      can(Action.Create, Hope); // WARNING! permission reserved to managers of NGOs. Replace after capability created
+
       can(Action.Read, Hope);
       cannot(Action.Read, Hope, {
         isPublished: false,

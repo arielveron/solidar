@@ -35,6 +35,8 @@ export class UserResolver {
       throw new UnauthorizedException();
     }
 
+    this.logger.log(`User "${user.username}" requested all the Users`);
+
     return this.userService.listUsers();
   }
 }
