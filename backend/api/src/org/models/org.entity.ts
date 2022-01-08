@@ -2,7 +2,7 @@ import { UserType } from '../../user/models/user.type';
 import { Column, Entity, Index, ObjectIdColumn, PrimaryColumn } from 'typeorm';
 
 Entity();
-export class Ngo {
+export class Org {
   // identification properties
   @ObjectIdColumn()
   _id: string;

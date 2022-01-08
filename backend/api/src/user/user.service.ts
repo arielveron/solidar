@@ -38,7 +38,7 @@ export class UserService {
     const userCreated: User = this.userRepository.create(user);
 
     try {
-      // the destructuring trick removes password from the returned object
+      // this destructuring trick removes password from the returned object
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...savedUser } = await this.userRepository.save(
         userCreated,
