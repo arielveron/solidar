@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create-user.input';
@@ -12,6 +16,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+  private logger = new Logger('UserService');
 
   async createUser(createUserInput: CreateUserInput): Promise<UserType> {
     const hashedPass: string = await this.doHashPassword(
@@ -31,7 +36,27 @@ export class UserService {
     };
 
     const userCreated: User = this.userRepository.create(user);
-    return this.userRepository.save(userCreated);
+
+    try {
+      // the destructuring trick removes password from the returned object
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...savedUser } = await this.userRepository.save(
+        userCreated,
+      );
+
+      this.logger.log(
+        `Created User: "${savedUser.username}", Name: "${savedUser.firstName} ${savedUser.lastName}"`,
+      );
+      this.logger.verbose(`Created User: ${JSON.stringify(savedUser)}`);
+
+      return savedUser;
+    } catch (error) {
+      this.logger.error(
+        `Failed to save User "${createUserInput.username}"`,
+        error.stack,
+      );
+      throw new InternalServerErrorException('Error saving to DB');
+    }
   }
 
   async findOne(username: string): Promise<User> {

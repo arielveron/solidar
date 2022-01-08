@@ -46,8 +46,8 @@ export class HopeService {
 
     try {
       const savedHope = await this.hopeRepository.save(createdHope);
-      this.logger.log(`Created Hope: ${createdHope.subject}`);
-      this.logger.verbose(`Created Hope: ${JSON.stringify(createdHope)}`);
+      this.logger.log(`Created Hope: "${savedHope.subject}"`);
+      this.logger.verbose(`Created Hope: ${JSON.stringify(savedHope)}`);
       return savedHope;
     } catch (error) {
       this.logger.error(
