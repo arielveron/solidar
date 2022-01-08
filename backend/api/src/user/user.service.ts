@@ -26,6 +26,8 @@ export class UserService {
       firstName: createUserInput.firstName,
       lastName: createUserInput.lastName,
       isAdmin: false,
+      enabled: true,
+      createdAt: Date.now().toLocaleString(),
     };
 
     const userCreated: User = this.userRepository.create(user);
