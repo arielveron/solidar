@@ -4,7 +4,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserType } from 'src/user/models/user.type';
+import { UserType } from '../user/models/user.type';
+import { CurrentDateTime } from '../util/date.helpers';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
@@ -38,7 +39,7 @@ export class HopeService {
       subject,
       description,
       isPublished: true,
-      createdAt: new Date().toISOString(),
+      createdAt: CurrentDateTime(),
       authorId: user.id,
     };
 
