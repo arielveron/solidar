@@ -60,12 +60,26 @@ export class UserService {
     }
   }
 
-  async findOne(username: string): Promise<User> {
+  async findOne(id: string): Promise<User> {
+    return this.userRepository.findOne({ id });
+  }
+
+  async findUsername(username: string): Promise<User> {
     return this.userRepository.findOne({ username });
   }
 
   async listUsers(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  async getManyUsers(userIds: string[]): Promise<User[]> {
+    return this.userRepository.find({
+      where: {
+        id: {
+          $in: userIds,
+        },
+      },
+    });
   }
 
   // Private methods

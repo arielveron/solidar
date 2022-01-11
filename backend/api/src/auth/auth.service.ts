@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string) {
-    const user = await this.userService.findOne(username); // replace with usersService
+    const user = await this.userService.findUsername(username); // replace with usersService
 
     const valid = await bcrypt.compare(password, user?.password);
     if (user && valid) {
@@ -27,7 +27,7 @@ export class AuthService {
 
   async login(username: string): Promise<LoginResponse> {
     // TODO: use a type to put JWT data
-    const user: User = await this.userService.findOne(username);
+    const user: User = await this.userService.findUsername(username);
 
     const payload: JwtPayload = {
       id: user.id,

@@ -5,9 +5,15 @@ import { Hope } from './models/hope.entity';
 import { HopeResolver } from './hope.resolver';
 import { HopeService } from './hope.service';
 import { CaslModule } from '../casl/casl.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Hope]), AuthModule, CaslModule],
+  imports: [
+    TypeOrmModule.forFeature([Hope]),
+    AuthModule,
+    CaslModule,
+    UserModule,
+  ],
   providers: [HopeResolver, HopeService],
 })
 export class HopeModule {}

@@ -1,5 +1,13 @@
 import { Logger, UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PoliciesGuard } from '../casl/policies.guard';
 import { CreateHopeInput } from './dto/create-hope.input';
@@ -9,7 +17,8 @@ import { HopeType } from './models/hope.type';
 import { AppAbility, CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { User } from '../user/models/user.entity';
 import { Action } from '../auth/actions/action.enum';
-import { CheckPolicies } from 'src/casl/check-policies.decorator';
+import { CheckPolicies } from '../casl/check-policies.decorator';
+import { UserService } from '../user/user.service';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
@@ -18,6 +27,7 @@ export class HopeResolver {
   constructor(
     private hopeService: HopeService,
     private caslAbilityFactory: CaslAbilityFactory,
+    private userService: UserService,
   ) {}
 
   /// Get a specified Hope
@@ -60,5 +70,14 @@ export class HopeResolver {
       ctx.req.user,
     );
     return hope;
+  }
+
+  /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
+  @ResolveField()
+  async authorId(@Parent() hope: HopeType) {
+    if (hope.authorId != null) {
+      return this.userService.findOne(hope.authorId);
+    }
+    return [];
   }
 }

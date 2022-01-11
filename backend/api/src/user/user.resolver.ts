@@ -10,7 +10,7 @@ import { Action } from '../auth/actions/action.enum';
 import { User } from './models/user.entity';
 import { PoliciesGuard } from '../casl/policies.guard';
 
-@Resolver()
+@Resolver(() => UserType)
 export class UserResolver {
   private logger = new Logger('UserResolver');
   constructor(private userService: UserService) {}
@@ -29,7 +29,7 @@ export class UserResolver {
   @Query(() => [UserType])
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, User))
-  listUsers(@Context() ctx): Promise<UserType[]> {
+  users(@Context() ctx): Promise<UserType[]> {
     // temporarily allow access to read users only to Admins
     // later this endpoint can automatically list the users linked to a NGO if the user is a NGOAdmin
     const user: User = ctx.req.user;
@@ -40,5 +40,11 @@ export class UserResolver {
     this.logger.log(`User "${user.username}" requested all the Users`);
 
     return this.userService.listUsers();
+  }
+
+  // List User
+  @Query(() => UserType)
+  user(@Args('id') id: string) {
+    return this.userService.findOne(id);
   }
 }
