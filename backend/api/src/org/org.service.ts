@@ -1,4 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateOrgInput } from './dto/create-org.input';
+import { Org } from './models/org.entity';
+import { v4 as uuid } from 'uuid';
+import { User } from '../user/models/user.entity';
+import { CurrentDateTime } from '../util/date.helpers';
 
 @Injectable()
-export class OrgService {}
+export class OrgService {
+  constructor(@InjectRepository(Org) private orgRepository: Repository<Org>) {}
+  createOrg(createOrgInput: CreateOrgInput, user: User): Promise<Org> {
+    const { orgName } = createOrgInput;
+
+    const org: Org = {
+      _id: null,
+      id: uuid(),
+      orgName,
+      enabled: true,
+      createdBy: user.id,
+      hopeCreators: [user.id],
+      createdAt: CurrentDateTime(),
+    };
+
+    const createdOrg = this.orgRepository.create(org);
+
+    return this.orgRepository.save(createdOrg);
+  }
+}

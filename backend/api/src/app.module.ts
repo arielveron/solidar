@@ -3,13 +3,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configValidationSchema } from './config.schema';
-import { Hope } from './hope/models/hope.entity';
+
 import { HopeModule } from './hope/hope.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { User } from './user/models/user.entity';
 import { CaslModule } from './casl/casl.module';
 import { OrgModule } from './org/org.module';
+
+import { Hope } from './hope/models/hope.entity';
+import { User } from './user/models/user.entity';
+import { Org } from './org/models/org.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,7 +28,7 @@ import { OrgModule } from './org/org.module';
           url: configService.get('DB_URL'),
           synchronize: true, // this is not intended to be used on production
           useUnifiedTopology: true,
-          entities: [Hope, User],
+          entities: [Hope, User, Org],
         };
       },
     }),

@@ -1,7 +1,6 @@
-import { UserType } from '../../user/models/user.type';
 import { Column, Entity, Index, ObjectIdColumn, PrimaryColumn } from 'typeorm';
 
-Entity();
+@Entity()
 export class Org {
   // identification properties
   @ObjectIdColumn()
@@ -13,11 +12,11 @@ export class Org {
   // descriptive properties
   @Index({ unique: true })
   @Column()
-  ngoName: string;
+  orgName: string;
 
   // administration properties
   @Column()
-  managers: UserType[];
+  hopeCreators: string[];
 
   // object birth properties
   @Column()
