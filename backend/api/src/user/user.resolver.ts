@@ -15,6 +15,8 @@ export class UserResolver {
   private logger = new Logger('UserResolver');
   constructor(private userService: UserService) {}
 
+  /// Create User
+
   @Mutation(() => UserType)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,

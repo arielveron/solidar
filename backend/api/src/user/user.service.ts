@@ -10,6 +10,7 @@ import { User } from './models/user.entity';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { UserType } from './models/user.type';
+import { CurrentDateTime } from '../util/date.helpers';
 
 @Injectable()
 export class UserService {
@@ -32,7 +33,7 @@ export class UserService {
       lastName: createUserInput.lastName,
       isAdmin: false,
       enabled: true,
-      createdAt: Date.now().toLocaleString(),
+      createdAt: CurrentDateTime(),
     };
 
     const userCreated: User = this.userRepository.create(user);
