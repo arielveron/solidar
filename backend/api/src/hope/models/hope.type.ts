@@ -20,5 +20,5 @@ export class HopeType {
   isPublished: boolean;
 
   @Field((type) => UserType, { nullable: true })
-  author: string;
+  createdBy: string;
 }

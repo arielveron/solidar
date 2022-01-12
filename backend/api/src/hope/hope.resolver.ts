@@ -75,9 +75,9 @@ export class HopeResolver {
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
   @ResolveField(() => UserType)
-  async author(@Parent() hope: HopeType): Promise<UserType | []> {
-    if (hope.author != null) {
-      return this.userService.findOne(hope.author);
+  async createdBy(@Parent() hope: HopeType): Promise<UserType | []> {
+    if (hope.createdBy != null) {
+      return this.userService.findOne(hope.createdBy);
     }
     return [];
   }

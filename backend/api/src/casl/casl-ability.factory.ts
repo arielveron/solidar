@@ -31,11 +31,11 @@ export class CaslAbilityFactory {
       can(Action.Create, Hope); // WARNING! permission reserved to managers of ORGs. Replace after capability created
 
       can(Action.Read, Hope);
-      can(Action.Update, Hope, { author: user.id });
+      can(Action.Update, Hope, { createdBy: user.id });
 
       cannot(Action.Read, Hope, {
         isPublished: false,
-        author: { $ne: user.id },
+        createdBy: { $ne: user.id },
       }).because('Access denied');
     }
 

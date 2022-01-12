@@ -48,6 +48,7 @@ export class OrgResolver {
     }
     return [];
   }
+
   @ResolveField(() => [UserType])
   async hopeCreators(@Parent() org: OrgType): Promise<User[] | []> {
     if (org.hopeCreators != null) {
