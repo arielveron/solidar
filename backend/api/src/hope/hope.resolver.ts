@@ -19,6 +19,7 @@ import { User } from '../user/models/user.entity';
 import { Action } from '../auth/actions/action.enum';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
+import { UserType } from '../user/models/user.type';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
@@ -73,10 +74,10 @@ export class HopeResolver {
   }
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
-  @ResolveField()
-  async authorId(@Parent() hope: HopeType) {
-    if (hope.authorId != null) {
-      return this.userService.findOne(hope.authorId);
+  @ResolveField(() => UserType)
+  async author(@Parent() hope: HopeType): Promise<UserType | []> {
+    if (hope.author != null) {
+      return this.userService.findOne(hope.author);
     }
     return [];
   }

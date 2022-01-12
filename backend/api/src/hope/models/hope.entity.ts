@@ -21,5 +21,5 @@ export class Hope {
   isPublished: boolean;
 
   @Column()
-  authorId: string;
+  author: string;
 }

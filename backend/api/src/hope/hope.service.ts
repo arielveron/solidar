@@ -40,7 +40,7 @@ export class HopeService {
       description,
       isPublished: true,
       createdAt: CurrentDateTime(),
-      authorId: user.id,
+      author: user.id,
     };
 
     const createdHope = this.hopeRepository.create(hope);
