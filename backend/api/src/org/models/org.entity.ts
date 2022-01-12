@@ -16,6 +16,9 @@ export class Org {
 
   // administration properties
   @Column()
+  owners: string[];
+
+  @Column()
   hopeCreators: string[];
 
   // object birth properties

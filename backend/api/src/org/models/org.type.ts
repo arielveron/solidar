@@ -7,6 +7,9 @@ export class OrgType {
   orgName: string;
 
   @Field(() => [UserType], { nullable: true })
+  owners: string[];
+
+  @Field(() => [UserType], { nullable: true })
   hopeCreators: string[];
 
   @Field()

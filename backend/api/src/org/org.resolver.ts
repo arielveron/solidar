@@ -42,6 +42,13 @@ export class OrgResolver {
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
   @ResolveField(() => [UserType])
+  async owners(@Parent() org: OrgType): Promise<User[] | []> {
+    if (org.owners != null) {
+      return this.userService.getManyUsers(org.owners);
+    }
+    return [];
+  }
+  @ResolveField(() => [UserType])
   async hopeCreators(@Parent() org: OrgType): Promise<User[] | []> {
     if (org.hopeCreators != null) {
       return this.userService.getManyUsers(org.hopeCreators);

@@ -19,15 +19,16 @@ export class OrgService {
   }
 
   createOrg(createOrgInput: CreateOrgInput, user: User): Promise<Org> {
-    const { orgName } = createOrgInput;
+    const { orgName, owners, hopeCreators } = createOrgInput;
 
     const org: Org = {
       _id: null,
       id: uuid(),
       orgName,
+      owners,
+      hopeCreators,
       enabled: true,
       createdBy: user.id,
-      hopeCreators: [user.id],
       createdAt: CurrentDateTime(),
     };
 
