@@ -31,7 +31,7 @@ export class HopeResolver {
     private userService: UserService,
   ) {}
 
-  /// Get a specified Hope
+  /// Get a specific Hope
 
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))

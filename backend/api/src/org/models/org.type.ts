@@ -6,7 +6,7 @@ export class OrgType {
   @Field()
   orgName: string;
 
-  @Field(() => [UserType])
+  @Field(() => [UserType], { nullable: true })
   hopeCreators: string[];
 
   @Field()
