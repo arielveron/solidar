@@ -5,12 +5,14 @@ import { AuthModule } from '../auth/auth.module';
 import { User } from './models/user.entity';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
+import { OrgModule } from '../org/org.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => AuthModule),
     CaslModule,
+    forwardRef(() => OrgModule),
   ],
   providers: [UserResolver, UserService],
   exports: [UserService],

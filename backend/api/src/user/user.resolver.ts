@@ -1,5 +1,13 @@
 import { Logger, UseGuards, UnauthorizedException } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { CreateUserInput } from './dto/create-user.input';
 import { UserType } from './models/user.type';
 import { UserService } from './user.service';
@@ -9,11 +17,17 @@ import { AppAbility } from '../casl/casl-ability.factory';
 import { Action } from '../auth/actions/action.enum';
 import { User } from './models/user.entity';
 import { PoliciesGuard } from '../casl/policies.guard';
+import { OrgType } from '../org/models/org.type';
+import { OrgService } from '../org/org.service';
+import { Org } from '../org/models/org.entity';
 
 @Resolver(() => UserType)
 export class UserResolver {
   private logger = new Logger('UserResolver');
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private orgService: OrgService,
+  ) {}
 
   /// Create User
 
@@ -46,5 +60,14 @@ export class UserResolver {
   @Query(() => UserType)
   user(@Args('id') id: string) {
     return this.userService.findOne(id);
+  }
+
+  /// Resolvers
+  @ResolveField(() => [OrgType])
+  async orgOwnerOf(@Parent() user: UserType): Promise<Org[] | []> {
+    if (user.orgOwnerOf != null) {
+      return this.orgService.getManyOrgs(user.orgOwnerOf);
+    }
+    return [];
   }
 }

@@ -74,6 +74,10 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  async save(user: User): Promise<User> {
+    return this.userRepository.save(user);
+  }
+
   async getManyUsers(userIds: string[]): Promise<User[]> {
     return this.userRepository.find({
       where: {

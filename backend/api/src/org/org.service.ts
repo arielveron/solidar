@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrgInput } from './dto/create-org.input';
@@ -25,12 +25,15 @@ export class OrgService {
   async createOrg(createOrgInput: CreateOrgInput, user: User): Promise<Org> {
     const { orgName, owners, hopeCreators } = createOrgInput;
 
+    const orgId: string = uuid();
+
     const org: Org = {
       _id: null,
-      id: uuid(),
+      id: orgId,
       orgName,
-      owners: await this.linkUsers(owners),
-      hopeCreators: await this.linkUsers(hopeCreators),
+      owners: await this.linkUsersToOwners(orgId, owners),
+      // hopeCreators: await this.linkUsersToHopeCreators(orgId, hopeCreators),
+      hopeCreators,
       enabled: true,
       createdBy: user.id,
       createdAt: CurrentDateTime(),
@@ -40,15 +43,81 @@ export class OrgService {
     return this.orgRepository.save(createdOrg);
   }
 
-  /// Link Org to Users
-  async linkUsers(userList: string[]): Promise<string[]> {
-    userList.forEach(async (userId) => {
-      const foundUser: User = await this.userService.findOne(userId);
-      if (!foundUser) throw new BadRequestException(`User ${userId} Not found`);
-
-      return foundUser.id;
+  async getManyOrgs(orgIds: string[]): Promise<Org[]> {
+    return this.orgRepository.find({
+      where: {
+        id: {
+          $in: orgIds,
+        },
+      },
     });
+  }
 
-    return userList;
+  /// Link Org to Users
+  async linkUsersToOwners(
+    orgId: string,
+    userList: string[],
+  ): Promise<string[]> {
+    const validUsers = await this.getValidUsers(userList);
+
+    const validUsersIdList: string[] = [];
+    if (!validUsers || validUsers?.length === 0) return validUsersIdList;
+
+    for (const user of validUsers) {
+      let userToSave: User;
+
+      if (user.orgOwnerOf === undefined || user.orgOwnerOf === null) {
+        userToSave = {
+          ...user,
+          orgOwnerOf: [orgId],
+        };
+      } else if (!(orgId in user?.orgOwnerOf)) {
+        userToSave = {
+          ...user,
+          orgOwnerOf: [...user.orgOwnerOf, orgId],
+        };
+      }
+      await this.userService.save(userToSave);
+      validUsersIdList.push(userToSave.id);
+    }
+    return validUsersIdList;
+  }
+
+  async linkUsersToHopeCreators(
+    orgId: string,
+    userList: string[],
+  ): Promise<string[]> {
+    console.log('linkUsersToHope');
+    const validUsers = await this.getValidUsers(userList);
+
+    let validUsersIdList: string[];
+    if (!validUsers || validUsersIdList?.length === 0) return validUsersIdList;
+
+    for (const user of validUsers) {
+      if (!(orgId in user.hopeCreatorOf)) {
+        const userToSave: User = {
+          hopeCreatorOf: [...user.hopeCreatorOf, orgId],
+          ...user,
+        };
+        await this.userService.save(userToSave);
+      }
+      validUsersIdList.push(user.id);
+    }
+    return validUsersIdList;
+  }
+
+  async getValidUsers(userList: string[]): Promise<User[]> {
+    const validUsers: User[] = [];
+    if (!userList || userList?.length === 0) return validUsers;
+
+    for (const userId of userList) {
+      const foundUser: User = await this.userService.findOne(userId);
+
+      if (foundUser) {
+        validUsers.push(foundUser);
+      }
+    }
+
+    return validUsers;
   }
 }
