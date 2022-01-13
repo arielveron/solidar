@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { OrgType } from 'src/org/models/org.type';
 
 @ObjectType('User')
 export class UserType {
@@ -16,4 +17,11 @@ export class UserType {
 
   @Field()
   isAdmin: boolean;
+
+  // administration properties
+  @Field(() => [OrgType], { nullable: true })
+  orgOwnerOf: string[];
+
+  @Field(() => [OrgType], { nullable: true })
+  hopeCreatorOf: string[];
 }

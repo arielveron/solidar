@@ -31,6 +31,8 @@ export class UserService {
       password: hashedPass,
       firstName: createUserInput.firstName,
       lastName: createUserInput.lastName,
+      orgOwnerOf: [],
+      hopeCreatorOf: [],
       isAdmin: false,
       enabled: true,
       createdAt: CurrentDateTime(),

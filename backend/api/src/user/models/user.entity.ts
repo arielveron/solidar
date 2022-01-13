@@ -26,6 +26,13 @@ export class User {
   @Column()
   isAdmin: boolean;
 
+  // administration properties
+  @Column()
+  orgOwnerOf: string[];
+
+  @Column()
+  hopeCreatorOf: string[];
+
   // object birth properties
   @Column()
   enabled: boolean;
