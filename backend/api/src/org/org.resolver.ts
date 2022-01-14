@@ -15,7 +15,7 @@ import { OrgService } from './org.service';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
 import { User } from '../user/models/user.entity';
-import { LinkOrgToUsers } from './dto/link-org-users.input';
+import { RelationOrgToUsers } from './dto/relation-org-users.input';
 
 @Resolver(() => OrgType)
 export class OrgResolver {
@@ -45,9 +45,9 @@ export class OrgResolver {
   @Mutation(() => OrgType)
   @UseGuards(JwtAuthGuard)
   linkOrgToUsers(
-    @Args('linkOrgToUsers') linkOrgToUsers: LinkOrgToUsers,
+    @Args('relationOrgToUsers') relationOrgToUsers: RelationOrgToUsers,
   ): Promise<OrgType | []> {
-    return this.orgService.linkOrgToUsers(linkOrgToUsers);
+    return this.orgService.linkOrgToUsers(relationOrgToUsers);
   }
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities

@@ -9,7 +9,7 @@ import { CurrentDateTime } from '../util/date.helpers';
 import { UserService } from '../user/user.service';
 import { LinkOrgField } from '../util/org.enum';
 import { JwtPayload } from '../auth/dto/jwt.payload';
-import { LinkOrgToUsers } from './dto/link-org-users.input';
+import { RelationOrgToUsers } from './dto/relation-org-users.input';
 
 @Injectable()
 export class OrgService {
@@ -60,8 +60,8 @@ export class OrgService {
     return this.orgRepository.save(createdOrg);
   }
 
-  async linkOrgToUsers(linkOrgToUsers: LinkOrgToUsers): Promise<Org> {
-    const { orgId, owners, hopeCreators } = linkOrgToUsers;
+  async linkOrgToUsers(relationOrgToUsers: RelationOrgToUsers): Promise<Org> {
+    const { orgId, owners, hopeCreators } = relationOrgToUsers;
 
     let orgToUpdate: Org = await this.findOne(orgId);
     orgToUpdate = {
