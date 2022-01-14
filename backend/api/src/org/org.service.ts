@@ -8,6 +8,8 @@ import { User } from '../user/models/user.entity';
 import { CurrentDateTime } from '../util/date.helpers';
 import { UserService } from '../user/user.service';
 import { LinkOrgField } from '../util/org.enum';
+import { JwtPayload } from '../auth/dto/jwt.payload';
+import { LinkOrgToUsers } from './dto/link-org-users.input';
 
 @Injectable()
 export class OrgService {
@@ -18,12 +20,19 @@ export class OrgService {
     private userService: UserService,
   ) {}
 
+  async findOne(id: string): Promise<Org> {
+    return this.orgRepository.findOne({ id });
+  }
+
   async getOrgs(): Promise<Org[]> {
     const orgs: Org[] = await this.orgRepository.find();
     return orgs;
   }
 
-  async createOrg(createOrgInput: CreateOrgInput, user: User): Promise<Org> {
+  async createOrg(
+    createOrgInput: CreateOrgInput,
+    user: JwtPayload,
+  ): Promise<Org> {
     const { orgName, owners, hopeCreators } = createOrgInput;
 
     const orgId: string = uuid();
@@ -49,6 +58,29 @@ export class OrgService {
 
     const createdOrg = this.orgRepository.create(org);
     return this.orgRepository.save(createdOrg);
+  }
+
+  async linkOrgToUsers(linkOrgToUsers: LinkOrgToUsers): Promise<Org> {
+    const { orgId, owners, hopeCreators } = linkOrgToUsers;
+
+    let orgToUpdate: Org = await this.findOne(orgId);
+    orgToUpdate = {
+      ...orgToUpdate,
+      owners: [
+        ...orgToUpdate.owners,
+        ...(await this.linkUsersToOrgField(orgId, owners, LinkOrgField.Owners)),
+      ],
+      hopeCreators: [
+        ...orgToUpdate.hopeCreators,
+        ...(await this.linkUsersToOrgField(
+          orgId,
+          hopeCreators,
+          LinkOrgField.HopeCreators,
+        )),
+      ],
+    };
+
+    return this.orgRepository.save(orgToUpdate);
   }
 
   async getManyOrgs(orgIds: string[]): Promise<Org[]> {
