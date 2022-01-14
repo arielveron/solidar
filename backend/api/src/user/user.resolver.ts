@@ -70,4 +70,12 @@ export class UserResolver {
     }
     return [];
   }
+
+  @ResolveField(() => [OrgType])
+  async hopeCreatorOf(@Parent() user: UserType): Promise<Org[] | []> {
+    if (user.hopeCreatorOf != null) {
+      return this.orgService.getManyOrgs(user.hopeCreatorOf);
+    }
+    return [];
+  }
 }
