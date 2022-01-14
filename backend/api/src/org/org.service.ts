@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { User } from '../user/models/user.entity';
 import { CurrentDateTime } from '../util/date.helpers';
 import { UserService } from '../user/user.service';
+import { LinkOrgField } from '../util/org.enum';
 
 @Injectable()
 export class OrgService {
@@ -31,9 +32,16 @@ export class OrgService {
       _id: null,
       id: orgId,
       orgName,
-      owners: await this.linkUsersToOwners(orgId, owners),
-      // hopeCreators: await this.linkUsersToHopeCreators(orgId, hopeCreators),
-      hopeCreators,
+      owners: await this.linkUsersToOrgField(
+        orgId,
+        owners,
+        LinkOrgField.Owners,
+      ),
+      hopeCreators: await this.linkUsersToOrgField(
+        orgId,
+        hopeCreators,
+        LinkOrgField.HopeCreators,
+      ),
       enabled: true,
       createdBy: user.id,
       createdAt: CurrentDateTime(),
@@ -53,10 +61,12 @@ export class OrgService {
     });
   }
 
-  /// Link Org to Users
-  async linkUsersToOwners(
+  // Link users to fields
+
+  async linkUsersToOrgField(
     orgId: string,
     userList: string[],
+    field: LinkOrgField,
   ): Promise<string[]> {
     const validUsers = await this.getValidUsers(userList);
 
@@ -66,44 +76,51 @@ export class OrgService {
     for (const user of validUsers) {
       let userToSave: User;
 
-      if (user.orgOwnerOf === undefined || user.orgOwnerOf === null) {
-        userToSave = {
-          ...user,
-          orgOwnerOf: [orgId],
-        };
-      } else if (!(orgId in user?.orgOwnerOf)) {
-        userToSave = {
-          ...user,
-          orgOwnerOf: [...user.orgOwnerOf, orgId],
-        };
+      switch (field) {
+        case LinkOrgField.Owners:
+          userToSave = this.setUserAsOrgOwner(user, userToSave, orgId);
+          break;
+        case LinkOrgField.HopeCreators:
+          userToSave = this.setUserAsOrgHopeCreator(user, userToSave, orgId);
+          break;
       }
+
       await this.userService.save(userToSave);
       validUsersIdList.push(userToSave.id);
     }
     return validUsersIdList;
   }
 
-  async linkUsersToHopeCreators(
-    orgId: string,
-    userList: string[],
-  ): Promise<string[]> {
-    console.log('linkUsersToHope');
-    const validUsers = await this.getValidUsers(userList);
-
-    let validUsersIdList: string[];
-    if (!validUsers || validUsersIdList?.length === 0) return validUsersIdList;
-
-    for (const user of validUsers) {
-      if (!(orgId in user.hopeCreatorOf)) {
-        const userToSave: User = {
-          hopeCreatorOf: [...user.hopeCreatorOf, orgId],
-          ...user,
-        };
-        await this.userService.save(userToSave);
-      }
-      validUsersIdList.push(user.id);
+  setUserAsOrgOwner(user: User, userToSave: User, orgId: string): User {
+    if (user.orgOwnerOf === undefined || user.orgOwnerOf === null) {
+      userToSave = {
+        ...user,
+        orgOwnerOf: [orgId],
+      };
+    } else if (!(orgId in user?.orgOwnerOf)) {
+      userToSave = {
+        ...user,
+        orgOwnerOf: [...user.orgOwnerOf, orgId],
+      };
     }
-    return validUsersIdList;
+
+    return userToSave;
+  }
+
+  setUserAsOrgHopeCreator(user: User, userToSave: User, orgId: string): User {
+    if (user.hopeCreatorOf === undefined || user.hopeCreatorOf === null) {
+      userToSave = {
+        ...user,
+        hopeCreatorOf: [orgId],
+      };
+    } else if (!(orgId in user?.hopeCreatorOf)) {
+      userToSave = {
+        ...user,
+        hopeCreatorOf: [...user.hopeCreatorOf, orgId],
+      };
+    }
+
+    return userToSave;
   }
 
   async getValidUsers(userList: string[]): Promise<User[]> {
