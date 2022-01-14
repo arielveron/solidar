@@ -4,12 +4,12 @@ import { Repository } from 'typeorm';
 import { CreateOrgInput } from './dto/create-org.input';
 import { Org } from './models/org.entity';
 import { v4 as uuid } from 'uuid';
-import { User } from '../user/models/user.entity';
 import { CurrentDateTime } from '../util/date.helpers';
 import { UserService } from '../user/user.service';
 import { LinkOrgField } from '../util/org.enum';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
+import { LinkUsersOrgHelper } from './helper/link-users-to-org-field.helper';
 
 @Injectable()
 export class OrgService {
@@ -18,6 +18,7 @@ export class OrgService {
   constructor(
     @InjectRepository(Org) private orgRepository: Repository<Org>,
     private userService: UserService,
+    private linkUsersOrgHelper: LinkUsersOrgHelper,
   ) {}
 
   async findOne(id: string): Promise<Org> {
@@ -41,12 +42,12 @@ export class OrgService {
       _id: null,
       id: orgId,
       orgName,
-      owners: await this.linkUsersToOrgField(
+      owners: await this.linkUsersOrgHelper.toField(
         orgId,
         owners,
         LinkOrgField.Owners,
       ),
-      hopeCreators: await this.linkUsersToOrgField(
+      hopeCreators: await this.linkUsersOrgHelper.toField(
         orgId,
         hopeCreators,
         LinkOrgField.HopeCreators,
@@ -64,20 +65,48 @@ export class OrgService {
     const { orgId, owners, hopeCreators } = relationOrgToUsers;
 
     let orgToUpdate: Org = await this.findOne(orgId);
+    // code return if not found
     orgToUpdate = {
       ...orgToUpdate,
       owners: [
         ...orgToUpdate.owners,
-        ...(await this.linkUsersToOrgField(orgId, owners, LinkOrgField.Owners)),
+        ...(await this.linkUsersOrgHelper.toField(
+          orgId,
+          owners,
+          LinkOrgField.Owners,
+        )),
       ],
       hopeCreators: [
         ...orgToUpdate.hopeCreators,
-        ...(await this.linkUsersToOrgField(
+        ...(await this.linkUsersOrgHelper.toField(
           orgId,
           hopeCreators,
           LinkOrgField.HopeCreators,
         )),
       ],
+    };
+
+    return this.orgRepository.save(orgToUpdate);
+  }
+
+  async unlinkOrgFromUsers(
+    relationOrgToUsers: RelationOrgToUsers,
+  ): Promise<Org> {
+    const { orgId, owners, hopeCreators } = relationOrgToUsers;
+
+    let orgToUpdate: Org = await this.findOne(orgId);
+    // code return if not found
+
+    let newOwners = [];
+    if (orgToUpdate?.owners?.length > 0) {
+      newOwners = orgToUpdate.owners.filter(
+        (userId) => !owners.includes(userId),
+      );
+    }
+
+    orgToUpdate = {
+      ...orgToUpdate,
+      owners: newOwners,
     };
 
     return this.orgRepository.save(orgToUpdate);
@@ -94,79 +123,4 @@ export class OrgService {
   }
 
   // Link users to fields
-
-  async linkUsersToOrgField(
-    orgId: string,
-    userList: string[],
-    field: LinkOrgField,
-  ): Promise<string[]> {
-    const validUsers = await this.getValidUsers(userList);
-
-    const validUsersIdList: string[] = [];
-    if (!validUsers || validUsers?.length === 0) return validUsersIdList;
-
-    for (const user of validUsers) {
-      let userToSave: User;
-
-      switch (field) {
-        case LinkOrgField.Owners:
-          userToSave = this.setUserAsOrgOwner(user, userToSave, orgId);
-          break;
-        case LinkOrgField.HopeCreators:
-          userToSave = this.setUserAsOrgHopeCreator(user, userToSave, orgId);
-          break;
-      }
-
-      await this.userService.save(userToSave);
-      validUsersIdList.push(userToSave.id);
-    }
-    return validUsersIdList;
-  }
-
-  setUserAsOrgOwner(user: User, userToSave: User, orgId: string): User {
-    if (user.orgOwnerOf === undefined || user.orgOwnerOf === null) {
-      userToSave = {
-        ...user,
-        orgOwnerOf: [orgId],
-      };
-    } else if (!(orgId in user?.orgOwnerOf)) {
-      userToSave = {
-        ...user,
-        orgOwnerOf: [...user.orgOwnerOf, orgId],
-      };
-    }
-
-    return userToSave;
-  }
-
-  setUserAsOrgHopeCreator(user: User, userToSave: User, orgId: string): User {
-    if (user.hopeCreatorOf === undefined || user.hopeCreatorOf === null) {
-      userToSave = {
-        ...user,
-        hopeCreatorOf: [orgId],
-      };
-    } else if (!(orgId in user?.hopeCreatorOf)) {
-      userToSave = {
-        ...user,
-        hopeCreatorOf: [...user.hopeCreatorOf, orgId],
-      };
-    }
-
-    return userToSave;
-  }
-
-  async getValidUsers(userList: string[]): Promise<User[]> {
-    const validUsers: User[] = [];
-    if (!userList || userList?.length === 0) return validUsers;
-
-    for (const userId of userList) {
-      const foundUser: User = await this.userService.findOne(userId);
-
-      if (foundUser) {
-        validUsers.push(foundUser);
-      }
-    }
-
-    return validUsers;
-  }
 }

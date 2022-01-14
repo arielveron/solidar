@@ -5,6 +5,7 @@ import { UserModule } from '../user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Org } from './models/org.entity';
 import { AuthModule } from '../auth/auth.module';
+import { LinkUsersOrgHelper } from './helper/link-users-to-org-field.helper';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
   ],
-  providers: [OrgService, OrgResolver],
+  providers: [OrgService, OrgResolver, LinkUsersOrgHelper],
   exports: [OrgService],
 })
 export class OrgModule {}
