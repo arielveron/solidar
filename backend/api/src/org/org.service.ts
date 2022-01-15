@@ -65,7 +65,8 @@ export class OrgService {
     const { orgId, owners, hopeCreators } = relationOrgToUsers;
 
     let orgToUpdate: Org = await this.findOne(orgId);
-    // code return if not found
+    if (!orgToUpdate) throw new Error(`Org "${orgId}" not found`);
+
     orgToUpdate = {
       ...orgToUpdate,
       owners: [
@@ -95,7 +96,7 @@ export class OrgService {
     const { orgId, owners, hopeCreators } = relationOrgToUsers;
 
     let orgToUpdate: Org = await this.findOne(orgId);
-    // code return if not found
+    if (!orgToUpdate) throw new Error(`Org "${orgId}" not found`);
 
     orgToUpdate = await this.unlinkUsersOrgHelper.unlinkOwners(
       orgId,
