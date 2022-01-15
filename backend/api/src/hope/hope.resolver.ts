@@ -41,6 +41,8 @@ export class HopeResolver {
     const user: User = ctx.req.user;
 
     this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
+    if (!hope) throw new Error(`The hope "${id}" was not found`);
+
     return hope;
   }
 
