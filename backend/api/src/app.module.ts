@@ -13,6 +13,7 @@ import { OrgModule } from './org/org.module';
 import { Hope } from './hope/models/hope.entity';
 import { User } from './user/models/user.entity';
 import { Org } from './org/models/org.entity';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,7 +33,17 @@ import { Org } from './org/models/org.entity';
         };
       },
     }),
-    GraphQLModule.forRoot({ autoSchemaFile: true }),
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+      debug: false,
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message: error.message,
+          extensions: error?.extensions,
+        };
+        return graphQLFormattedError;
+      },
+    }),
     HopeModule,
     AuthModule,
     UserModule,

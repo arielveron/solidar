@@ -9,18 +9,25 @@ export class UnlinkUsersOrgHelper {
   constructor(private userService: UserService) {}
 
   async unlinkOwners(orgId: string, owners: string[], orgToUpdate: Org) {
-    await this.removeFieldInUsers(orgId, owners, LinkOrgField.Owners);
-
-    const newOwners = this.excludeOrgsFromUserField(
+    const newOwners = this.excludeUsersFromOrg(
       orgToUpdate,
       owners,
       LinkOrgField.Owners,
     );
 
+    if (newOwners.length === 0) {
+      throw new Error(
+        'Removing the requested users will let this "Organization" without "Owners" and that is not allowed. Please insert another user as owner before removing this user.',
+      );
+    }
+
     orgToUpdate = {
       ...orgToUpdate,
       owners: newOwners,
     };
+
+    await this.removeFieldInUsers(orgId, owners, LinkOrgField.Owners);
+
     return orgToUpdate;
   }
 
@@ -29,13 +36,7 @@ export class UnlinkUsersOrgHelper {
     hopeCreators: string[],
     orgToUpdate: Org,
   ) {
-    await this.removeFieldInUsers(
-      orgId,
-      hopeCreators,
-      LinkOrgField.HopeCreators,
-    );
-
-    const newHopeCreators = this.excludeOrgsFromUserField(
+    const newHopeCreators = this.excludeUsersFromOrg(
       orgToUpdate,
       hopeCreators,
       LinkOrgField.HopeCreators,
@@ -45,15 +46,21 @@ export class UnlinkUsersOrgHelper {
       ...orgToUpdate,
       hopeCreators: newHopeCreators,
     };
+
+    await this.removeFieldInUsers(
+      orgId,
+      hopeCreators,
+      LinkOrgField.HopeCreators,
+    );
     return orgToUpdate;
   }
 
   // Remove array of users even whether they exist or not
-  private excludeOrgsFromUserField(
+  private excludeUsersFromOrg(
     orgToUpdate: Org,
     userList: string[],
     field: LinkOrgField,
-  ) {
+  ): string[] {
     switch (field) {
       case LinkOrgField.Owners:
         if (orgToUpdate?.owners?.length > 0) {
