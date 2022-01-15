@@ -58,8 +58,11 @@ export class UserResolver {
 
   // List User
   @Query(() => UserType)
-  user(@Args('id') id: string) {
-    return this.userService.findOne(id);
+  async user(@Args('id') id: string) {
+    const user: User = await this.userService.findOne(id);
+
+    if (!user) throw new Error(`The user "${id}" was not found`);
+    return user;
   }
 
   /// Resolvers
