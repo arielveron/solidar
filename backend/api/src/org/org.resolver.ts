@@ -50,13 +50,13 @@ export class OrgResolver {
     return this.orgService.linkOrgToUsers(relationOrgToUsers);
   }
 
-  // @Mutation(() => OrgType)
-  // @UseGuards(JwtAuthGuard)
-  // unlinkOrgFromUsers(
-  //   @Args('relationOrgToUsers') relationOrgToUsers: RelationOrgToUsers): Promise<OrgType | []> {
-  //     return this.orgService.unlinkOrgFromUsers(relationOrgToUsers);
-  //   }
-  // )
+  @Mutation(() => OrgType)
+  @UseGuards(JwtAuthGuard)
+  unlinkOrgFromUsers(
+    @Args('relationOrgToUsers') relationOrgToUsers: RelationOrgToUsers,
+  ): Promise<OrgType | []> {
+    return this.orgService.unlinkOrgFromUsers(relationOrgToUsers);
+  }
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
   @ResolveField(() => [UserType])

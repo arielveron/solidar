@@ -12,7 +12,7 @@ export class LinkUsersOrgHelper {
     userList: string[],
     field: LinkOrgField,
   ): Promise<string[]> {
-    const validUsers = await this.getValidUsers(userList);
+    const validUsers = await this.userService.getValidUsers(userList);
 
     const validUsersIdList: string[] = [];
     if (!validUsers || validUsers?.length === 0) return validUsersIdList;
@@ -65,20 +65,5 @@ export class LinkUsersOrgHelper {
     }
 
     return userToSave;
-  }
-
-  async getValidUsers(userList: string[]): Promise<User[]> {
-    const validUsers: User[] = [];
-    if (!userList || userList?.length === 0) return validUsers;
-
-    for (const userId of userList) {
-      const foundUser: User = await this.userService.findOne(userId);
-
-      if (foundUser) {
-        validUsers.push(foundUser);
-      }
-    }
-
-    return validUsers;
   }
 }

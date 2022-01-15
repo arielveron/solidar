@@ -10,6 +10,7 @@ import { LinkOrgField } from '../util/org.enum';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
 import { LinkUsersOrgHelper } from './helper/link-users-to-org-field.helper';
+import { User } from 'src/user/models/user.entity';
 
 @Injectable()
 export class OrgService {
@@ -97,12 +98,13 @@ export class OrgService {
     let orgToUpdate: Org = await this.findOne(orgId);
     // code return if not found
 
-    let newOwners = [];
-    if (orgToUpdate?.owners?.length > 0) {
-      newOwners = orgToUpdate.owners.filter(
-        (userId) => !owners.includes(userId),
-      );
-    }
+    await this.removeFieldInUsers(orgId, owners, LinkOrgField.Owners);
+
+    const newOwners = this.excludeOrgsFromUserField(
+      orgToUpdate,
+      owners,
+      LinkOrgField.Owners,
+    );
 
     orgToUpdate = {
       ...orgToUpdate,
@@ -110,6 +112,67 @@ export class OrgService {
     };
 
     return this.orgRepository.save(orgToUpdate);
+  }
+
+  // Remove array of users even whether they exist or not
+  private excludeOrgsFromUserField(
+    orgToUpdate: Org,
+    owners: string[],
+    field: LinkOrgField,
+  ) {
+    switch (field) {
+      case LinkOrgField.Owners:
+        if (orgToUpdate?.owners?.length > 0) {
+          return orgToUpdate.owners.filter(
+            (userId) => !owners.includes(userId),
+          );
+        }
+    }
+  }
+
+  async removeFieldInUsers(
+    orgId: string,
+    userList: string[],
+    field: LinkOrgField,
+  ) {
+    const validUsers = await this.userService.getValidUsers(userList);
+
+    const validUsersIdList: string[] = [];
+    if (!validUsers || validUsers?.length === 0) return validUsersIdList;
+
+    for (const user of validUsers) {
+      let userToSave: User;
+
+      switch (field) {
+        case LinkOrgField.Owners:
+          userToSave = this.unsetUserFromOrgOwner(user, userToSave, orgId);
+          break;
+        // case LinkOrgField.HopeCreators:
+        //   userToSave = this.setUserAsOrgHopeCreator(user, userToSave, orgId);
+        //   break;
+      }
+
+      await this.userService.save(userToSave);
+      validUsersIdList.push(userToSave.id);
+    }
+    return validUsersIdList;
+  }
+
+  unsetUserFromOrgOwner(user: User, userToSave: User, orgId: string): User {
+    if (orgId in user?.orgOwnerOf) {
+      userToSave = {
+        ...user,
+        orgOwnerOf: [
+          ...user.orgOwnerOf.filter(
+            (userId) => !user.orgOwnerOf.includes(userId),
+          ),
+        ],
+      };
+    }
+    userToSave = {
+      ...user,
+    };
+    return userToSave;
   }
 
   async getManyOrgs(orgIds: string[]): Promise<Org[]> {
@@ -121,6 +184,4 @@ export class OrgService {
       },
     });
   }
-
-  // Link users to fields
 }
