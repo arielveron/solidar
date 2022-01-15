@@ -98,6 +98,21 @@ export class OrgService {
     let orgToUpdate: Org = await this.findOne(orgId);
     // code return if not found
 
+    orgToUpdate = await this.unlinkOwners(orgId, owners, orgToUpdate);
+    orgToUpdate = await this.unlinkHopeCreators(
+      orgId,
+      hopeCreators,
+      orgToUpdate,
+    );
+
+    return this.orgRepository.save(orgToUpdate);
+  }
+
+  private async unlinkOwners(
+    orgId: string,
+    owners: string[],
+    orgToUpdate: Org,
+  ) {
     await this.removeFieldInUsers(orgId, owners, LinkOrgField.Owners);
 
     const newOwners = this.excludeOrgsFromUserField(
@@ -110,21 +125,51 @@ export class OrgService {
       ...orgToUpdate,
       owners: newOwners,
     };
+    return orgToUpdate;
+  }
 
-    return this.orgRepository.save(orgToUpdate);
+  private async unlinkHopeCreators(
+    orgId: string,
+    hopeCreators: string[],
+    orgToUpdate: Org,
+  ) {
+    await this.removeFieldInUsers(
+      orgId,
+      hopeCreators,
+      LinkOrgField.HopeCreators,
+    );
+
+    const newHopeCreators = this.excludeOrgsFromUserField(
+      orgToUpdate,
+      hopeCreators,
+      LinkOrgField.HopeCreators,
+    );
+
+    orgToUpdate = {
+      ...orgToUpdate,
+      hopeCreators: newHopeCreators,
+    };
+    return orgToUpdate;
   }
 
   // Remove array of users even whether they exist or not
   private excludeOrgsFromUserField(
     orgToUpdate: Org,
-    owners: string[],
+    userList: string[],
     field: LinkOrgField,
   ) {
     switch (field) {
       case LinkOrgField.Owners:
         if (orgToUpdate?.owners?.length > 0) {
           return orgToUpdate.owners.filter(
-            (userId) => !owners.includes(userId),
+            (userId) => !userList.includes(userId),
+          );
+        }
+
+      case LinkOrgField.HopeCreators:
+        if (orgToUpdate?.hopeCreators?.length > 0) {
+          return orgToUpdate.hopeCreators.filter(
+            (userId) => !userList.includes(userId),
           );
         }
     }
@@ -147,9 +192,9 @@ export class OrgService {
         case LinkOrgField.Owners:
           userToSave = this.unsetUserFromOrgOwner(user, userToSave, orgId);
           break;
-        // case LinkOrgField.HopeCreators:
-        //   userToSave = this.setUserAsOrgHopeCreator(user, userToSave, orgId);
-        //   break;
+        case LinkOrgField.HopeCreators:
+          userToSave = this.unsetUserFromHopeCreator(user, userToSave, orgId);
+          break;
       }
 
       await this.userService.save(userToSave);
@@ -165,6 +210,23 @@ export class OrgService {
         orgOwnerOf: [
           ...user.orgOwnerOf.filter(
             (userId) => !user.orgOwnerOf.includes(userId),
+          ),
+        ],
+      };
+    }
+    userToSave = {
+      ...user,
+    };
+    return userToSave;
+  }
+
+  unsetUserFromHopeCreator(user: User, userToSave: User, orgId: string): User {
+    if (orgId in user?.hopeCreatorOf) {
+      userToSave = {
+        ...user,
+        hopeCreatorOf: [
+          ...user.hopeCreatorOf.filter(
+            (userId) => !user.hopeCreatorOf.includes(userId),
           ),
         ],
       };
