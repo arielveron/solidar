@@ -10,7 +10,6 @@ import {
 import { CreateUserInput } from './dto/create-user.input';
 import { UserType } from './models/user.type';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { AppAbility } from '../casl/casl-ability.factory';
 import { Action } from '../auth/actions/action.enum';
@@ -21,6 +20,7 @@ import { OrgService } from '../org/org.service';
 import { Org } from '../org/models/org.entity';
 import { CurrentUser } from '../util/current-user.decorator';
 import { JwtPayload } from '../auth/dto/jwt.payload';
+import { SetAsPublic } from '../auth/decorators/set-as-public.decorator';
 
 @Resolver(() => UserType)
 export class UserResolver {
@@ -32,6 +32,7 @@ export class UserResolver {
 
   /// Create User
 
+  @SetAsPublic()
   @Mutation(() => UserType)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
@@ -42,7 +43,7 @@ export class UserResolver {
   /// List Users
 
   @Query(() => [UserType])
-  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, User))
   users(@CurrentUser() user: JwtPayload): Promise<UserType[]> {
     // temporarily allow access to read users only to Admins

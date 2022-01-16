@@ -1,4 +1,3 @@
-import { UseGuards } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -7,7 +6,6 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateOrgInput } from './dto/create-org.input';
 import { OrgType } from './models/org.type';
 import { OrgService } from './org.service';
@@ -33,7 +31,6 @@ export class OrgResolver {
   /// Create Org
 
   @Mutation(() => OrgType)
-  @UseGuards(JwtAuthGuard)
   createOrg(
     @Args('createOrgInput') createOrgInput: CreateOrgInput,
     @CurrentUser() user: JwtPayload,
@@ -43,7 +40,6 @@ export class OrgResolver {
 
   /// Link users to Orgs
   @Mutation(() => OrgType)
-  @UseGuards(JwtAuthGuard)
   linkOrgToUsers(
     @Args('relationOrgToUsers') relationOrgToUsers: RelationOrgToUsers,
   ): Promise<OrgType | []> {
@@ -51,7 +47,6 @@ export class OrgResolver {
   }
 
   @Mutation(() => OrgType)
-  @UseGuards(JwtAuthGuard)
   unlinkOrgFromUsers(
     @Args('relationOrgToUsers') relationOrgToUsers: RelationOrgToUsers,
   ): Promise<OrgType | []> {

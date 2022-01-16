@@ -7,7 +7,6 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PoliciesGuard } from '../casl/policies.guard';
 import { CreateHopeInput } from './dto/create-hope.input';
 import { Hope } from './models/hope.entity';
@@ -34,7 +33,7 @@ export class HopeResolver {
 
   /// Get a specific Hope
 
-  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => HopeType)
   async hope(
@@ -51,7 +50,7 @@ export class HopeResolver {
 
   /// Get Hopes
 
-  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => [HopeType])
   hopes(@CurrentUser() user: JwtPayload): Promise<Hope[]> {
@@ -63,7 +62,7 @@ export class HopeResolver {
   /// Create a hope
 
   @Mutation(() => HopeType)
-  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Hope))
   async createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,

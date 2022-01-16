@@ -14,6 +14,8 @@ import { Hope } from './hope/models/hope.entity';
 import { User } from './user/models/user.entity';
 import { Org } from './org/models/org.entity';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,5 +52,6 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
     CaslModule,
     OrgModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
