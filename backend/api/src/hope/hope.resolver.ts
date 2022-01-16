@@ -18,7 +18,7 @@ import { Action } from '../auth/actions/action.enum';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
-import { CurrentUser } from '../util/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from 'src/auth/dto/jwt.payload';
 
 @Resolver(() => HopeType)

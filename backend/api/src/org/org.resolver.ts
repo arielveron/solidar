@@ -12,7 +12,7 @@ import { OrgService } from './org.service';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
-import { CurrentUser } from '../util/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 
 @Resolver(() => OrgType)

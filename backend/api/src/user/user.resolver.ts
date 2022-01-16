@@ -18,7 +18,7 @@ import { PoliciesGuard } from '../casl/policies.guard';
 import { OrgType } from '../org/models/org.type';
 import { OrgService } from '../org/org.service';
 import { Org } from '../org/models/org.entity';
-import { CurrentUser } from '../util/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { SetAsPublic } from '../auth/decorators/set-as-public.decorator';
 
