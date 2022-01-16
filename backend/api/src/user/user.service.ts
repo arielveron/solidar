@@ -20,17 +20,16 @@ export class UserService {
   private logger = new Logger('UserService');
 
   async createUser(createUserInput: CreateUserInput): Promise<UserType> {
-    const hashedPass: string = await this.doHashPassword(
-      createUserInput.password,
-    );
+    const { username, firstName, lastName, password } = createUserInput;
+    const hashedPass: string = await this.doHashPassword(password);
 
     const user: User = {
       _id: null,
       id: uuid(),
-      username: createUserInput.username,
+      username: username.toLowerCase(),
       password: hashedPass,
-      firstName: createUserInput.firstName,
-      lastName: createUserInput.lastName,
+      firstName,
+      lastName,
       orgOwnerOf: [],
       hopeCreatorOf: [],
       isAdmin: false,
