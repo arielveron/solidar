@@ -14,7 +14,7 @@ import { HopeService } from './hope.service';
 import { HopeType } from './models/hope.type';
 import { AppAbility, CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { User } from '../user/models/user.entity';
-import { Action } from '../auth/actions/action.enum';
+import { Action } from '../casl/actions/action.enum';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';

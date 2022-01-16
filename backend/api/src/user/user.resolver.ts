@@ -12,7 +12,7 @@ import { UserType } from './models/user.type';
 import { UserService } from './user.service';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { AppAbility } from '../casl/casl-ability.factory';
-import { Action } from '../auth/actions/action.enum';
+import { Action } from '../casl/actions/action.enum';
 import { User } from './models/user.entity';
 import { PoliciesGuard } from '../casl/policies.guard';
 import { OrgType } from '../org/models/org.type';

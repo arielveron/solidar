@@ -8,7 +8,7 @@ import {
 } from '@casl/ability';
 import { Logger } from '@nestjs/common';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Action } from '../auth/actions/action.enum';
+import { Action } from './actions/action.enum';
 import { Hope } from '../hope/models/hope.entity';
 import { User } from '../user/models/user.entity';
 
