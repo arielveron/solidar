@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import {
   Args,
-  Context,
   Mutation,
   Parent,
   Query,
@@ -14,8 +13,8 @@ import { OrgType } from './models/org.type';
 import { OrgService } from './org.service';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
-import { User } from '../user/models/user.entity';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
+import { CurrentUser } from '../util/current-user.decorator';
 
 @Resolver(() => OrgType)
 export class OrgResolver {
@@ -36,9 +35,9 @@ export class OrgResolver {
   @UseGuards(JwtAuthGuard)
   createOrg(
     @Args('createOrgInput') createOrgInput: CreateOrgInput,
-    @Context() ctx,
+    @CurrentUser() user: UserType,
   ): Promise<OrgType> {
-    return this.orgService.createOrg(createOrgInput, ctx.req.user);
+    return this.orgService.createOrg(createOrgInput, user);
   }
 
   /// Link users to Orgs
@@ -60,7 +59,7 @@ export class OrgResolver {
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
   @ResolveField(() => [UserType])
-  async owners(@Parent() org: OrgType): Promise<User[] | []> {
+  async owners(@Parent() org: OrgType): Promise<UserType[] | []> {
     if (org.owners != null) {
       return this.userService.getManyUsers(org.owners);
     }
@@ -68,7 +67,7 @@ export class OrgResolver {
   }
 
   @ResolveField(() => [UserType])
-  async hopeCreators(@Parent() org: OrgType): Promise<User[] | []> {
+  async hopeCreators(@Parent() org: OrgType): Promise<UserType[] | []> {
     if (org.hopeCreators != null) {
       return this.userService.getManyUsers(org.hopeCreators);
     }
