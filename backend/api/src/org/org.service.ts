@@ -38,15 +38,28 @@ export class OrgService {
 
     const orgId: string = uuid();
 
+    const canditateToOwners: string[] = await this.linkUsersOrgHelper.toField(
+      orgId,
+      owners,
+      LinkOrgField.Owners,
+    );
+
+    console.log('create org', canditateToOwners);
+
+    if (!canditateToOwners || canditateToOwners?.length === 0)
+      throw new Error(
+        `At least a valid user is required as Org owner. The specified "${owners.join(
+          '","',
+        )}" ${owners?.length < 2 ? "isn't a" : "aren't"} valid user${
+          owners?.length < 2 ? '' : 's'
+        }.`,
+      );
+
     const org: Org = {
       _id: null,
       id: orgId,
       orgName,
-      owners: await this.linkUsersOrgHelper.toField(
-        orgId,
-        owners,
-        LinkOrgField.Owners,
-      ),
+      owners: canditateToOwners,
       hopeCreators: await this.linkUsersOrgHelper.toField(
         orgId,
         hopeCreators,
