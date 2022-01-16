@@ -1,7 +1,6 @@
 import { Logger, UseGuards, UnauthorizedException } from '@nestjs/common';
 import {
   Args,
-  Context,
   Mutation,
   Parent,
   Query,
@@ -20,6 +19,8 @@ import { PoliciesGuard } from '../casl/policies.guard';
 import { OrgType } from '../org/models/org.type';
 import { OrgService } from '../org/org.service';
 import { Org } from '../org/models/org.entity';
+import { CurrentUser } from '../util/current-user.decorator';
+import { JwtPayload } from '../auth/dto/jwt.payload';
 
 @Resolver(() => UserType)
 export class UserResolver {
@@ -43,10 +44,9 @@ export class UserResolver {
   @Query(() => [UserType])
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, User))
-  users(@Context() ctx): Promise<UserType[]> {
+  users(@CurrentUser() user: JwtPayload): Promise<UserType[]> {
     // temporarily allow access to read users only to Admins
     // later this endpoint can automatically list the users linked to a NGO if the user is a NGOAdmin
-    const user: User = ctx.req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException();
     }

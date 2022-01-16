@@ -15,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
 import { CurrentUser } from '../util/current-user.decorator';
+import { JwtPayload } from '../auth/dto/jwt.payload';
 
 @Resolver(() => OrgType)
 export class OrgResolver {
@@ -35,7 +36,7 @@ export class OrgResolver {
   @UseGuards(JwtAuthGuard)
   createOrg(
     @Args('createOrgInput') createOrgInput: CreateOrgInput,
-    @CurrentUser() user: UserType,
+    @CurrentUser() user: JwtPayload,
   ): Promise<OrgType> {
     return this.orgService.createOrg(createOrgInput, user);
   }

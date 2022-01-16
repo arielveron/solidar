@@ -20,6 +20,7 @@ import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
 import { CurrentUser } from '../util/current-user.decorator';
+import { JwtPayload } from 'src/auth/dto/jwt.payload';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
@@ -36,10 +37,13 @@ export class HopeResolver {
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => HopeType)
-  async hope(@Args('id') id: string, @CurrentUser() user: User): Promise<Hope> {
+  async hope(
+    @Args('id') id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<Hope> {
     const hope: Hope = await this.hopeService.getHope(id);
 
-    this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
+    this.caslAbilityFactory.checkPolicy(user as User, Action.Read, hope);
     if (!hope) throw new Error(`The hope "${id}" was not found`);
 
     return hope;
@@ -50,7 +54,7 @@ export class HopeResolver {
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => [HopeType])
-  hopes(@CurrentUser() user: User): Promise<Hope[]> {
+  hopes(@CurrentUser() user: JwtPayload): Promise<Hope[]> {
     this.logger.log(`User "${user.username}" requested all the Hopes`);
 
     return this.hopeService.getHopes();
@@ -63,9 +67,12 @@ export class HopeResolver {
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Hope))
   async createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
-    @CurrentUser() user: User,
+    @CurrentUser() user: JwtPayload,
   ): Promise<Hope> {
-    const hope: Hope = await this.hopeService.createHope(createHopeInput, user);
+    const hope: Hope = await this.hopeService.createHope(
+      createHopeInput,
+      user as UserType,
+    );
     return hope;
   }
 
