@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
+import { RolesService } from './roles.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -22,6 +23,12 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
     forwardRef(() => UserModule),
   ],
-  providers: [AuthResolver, AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthResolver,
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    RolesService,
+  ],
 })
 export class AuthModule {}

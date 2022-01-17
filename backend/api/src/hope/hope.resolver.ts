@@ -13,7 +13,6 @@ import { Hope } from './models/hope.entity';
 import { HopeService } from './hope.service';
 import { HopeType } from './models/hope.type';
 import { AppAbility, CaslAbilityFactory } from '../casl/casl-ability.factory';
-import { User } from '../user/models/user.entity';
 import { Action } from '../casl/actions/action.enum';
 import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
@@ -42,7 +41,7 @@ export class HopeResolver {
   ): Promise<Hope> {
     const hope: Hope = await this.hopeService.getHope(id);
 
-    this.caslAbilityFactory.checkPolicy(user as User, Action.Read, hope);
+    this.caslAbilityFactory.checkPolicy(user, Action.Read, hope);
     if (!hope) throw new Error(`The hope "${id}" was not found`);
 
     return hope;
@@ -68,10 +67,7 @@ export class HopeResolver {
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
     @CurrentUser() user: JwtPayload,
   ): Promise<Hope> {
-    const hope: Hope = await this.hopeService.createHope(
-      createHopeInput,
-      user as UserType,
-    );
+    const hope: Hope = await this.hopeService.createHope(createHopeInput, user);
     return hope;
   }
 

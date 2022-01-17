@@ -10,4 +10,7 @@ export class JwtPayload {
 
   @Field()
   isAdmin: boolean;
+
+  @Field()
+  isHopeCreator: boolean;
 }

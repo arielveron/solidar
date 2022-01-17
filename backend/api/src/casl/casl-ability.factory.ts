@@ -11,6 +11,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Action } from './actions/action.enum';
 import { Hope } from '../hope/models/hope.entity';
 import { User } from '../user/models/user.entity';
+import { JwtPayload } from 'src/auth/dto/jwt.payload';
 
 export type Subjects = InferSubjects<typeof Hope | typeof User> | 'all';
 
@@ -20,7 +21,7 @@ export type AppAbility = Ability<[Action, Subjects]>;
 export class CaslAbilityFactory {
   private logger = new Logger('CASL Factory');
 
-  createForUser(user: User) {
+  createForUser(user: JwtPayload) {
     const { can, cannot, build } = new AbilityBuilder<
       Ability<[Action, Subjects]>
     >(Ability as AbilityClass<AppAbility>);
@@ -48,7 +49,7 @@ export class CaslAbilityFactory {
     });
   }
 
-  checkPolicy(user: User, action: Action, subject: Subjects) {
+  checkPolicy(user: JwtPayload, action: Action, subject: Subjects) {
     const ability = this.createForUser(user);
 
     try {

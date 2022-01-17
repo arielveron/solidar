@@ -4,13 +4,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserType } from '../user/models/user.type';
 import { CurrentDateTime } from '../util/date.helpers';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import { CreateHopeInput } from './dto/create-hope.input';
 import { Hope } from './models/hope.entity';
+import { JwtPayload } from 'src/auth/dto/jwt.payload';
 
 @Injectable()
 export class HopeService {
@@ -29,7 +29,7 @@ export class HopeService {
 
   async createHope(
     createHopeInput: CreateHopeInput,
-    user: UserType,
+    user: JwtPayload,
   ): Promise<Hope> {
     const { subject, description } = createHopeInput;
 
