@@ -111,7 +111,6 @@ export class UnlinkUsersOrgHelper {
     userToSave: User,
     orgId: string,
   ): User {
-
     userToSave = {
       ...user,
     };
@@ -130,19 +129,15 @@ export class UnlinkUsersOrgHelper {
     userToSave: User,
     orgId: string,
   ): User {
-    if (orgId in user?.hopeCreatorOf) {
-      userToSave = {
-        ...user,
-        hopeCreatorOf: [
-          ...user.hopeCreatorOf.filter(
-            (userId) => !user.hopeCreatorOf.includes(userId),
-          ),
-        ],
-      };
-    }
     userToSave = {
       ...user,
     };
+
+    if (user?.hopeCreatorOf.includes(orgId)) {
+      userToSave.hopeCreatorOf = [
+        ...user.hopeCreatorOf.filter((org) => org !== orgId),
+      ];
+    }
     return userToSave;
   }
 }
