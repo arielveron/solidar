@@ -111,19 +111,17 @@ export class UnlinkUsersOrgHelper {
     userToSave: User,
     orgId: string,
   ): User {
-    if (orgId in user?.orgOwnerOf) {
-      userToSave = {
-        ...user,
-        orgOwnerOf: [
-          ...user.orgOwnerOf.filter(
-            (userId) => !user.orgOwnerOf.includes(userId),
-          ),
-        ],
-      };
-    }
+
     userToSave = {
       ...user,
     };
+
+    if (user?.orgOwnerOf.includes(orgId)) {
+      userToSave.orgOwnerOf = [
+        ...user.orgOwnerOf.filter((org) => org !== orgId),
+      ];
+    }
+
     return userToSave;
   }
 
