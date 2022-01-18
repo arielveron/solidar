@@ -75,19 +75,18 @@ export class OrgService {
   }
 
   async linkOrgToUsers(relationOrgToUsers: RelationOrgToUsers): Promise<Org> {
-    const { orgId, owners, hopeCreators } = relationOrgToUsers;
+    const { orgId, owners: newOwners, hopeCreators } = relationOrgToUsers;
 
-    let orgToUpdate: Org = await this.findOne(orgId);
+    const orgToUpdate: Org = await this.findOne(orgId);
     if (!orgToUpdate) throw new Error(`Org "${orgId}" not found`);
 
-    orgToUpdate = {
+    const newOrg = {
       ...orgToUpdate,
       owners: [
-        ...orgToUpdate.owners,
-        ...(await this.linkUsersOrgHelper.toField(
+        ...(await this.linkUsersOrgHelper.resolveOwners(
           orgId,
-          owners,
-          LinkOrgField.Owners,
+          orgToUpdate.owners,
+          newOwners,
         )),
       ],
       hopeCreators: [
@@ -100,7 +99,7 @@ export class OrgService {
       ],
     };
 
-    return this.orgRepository.save(orgToUpdate);
+    return this.orgRepository.save(newOrg);
   }
 
   async unlinkOrgFromUsers(

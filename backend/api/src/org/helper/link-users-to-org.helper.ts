@@ -7,6 +7,27 @@ import { LinkOrgField } from '../../util/org.enum';
 export class LinkUsersOrgHelper {
   constructor(private userService: UserService) {}
 
+  async resolveOwners(
+    orgId: string,
+    currentOwners: string[],
+    ownersToLink: string[],
+  ): Promise<string[]> {
+    const unexistentOwners: string[] = ownersToLink.filter(
+      (user) => !currentOwners.includes(user),
+    );
+
+    let ownersFinal = [...currentOwners];
+
+    if (currentOwners?.length > 0 && unexistentOwners.length > 0) {
+      ownersFinal = [
+        ...ownersFinal,
+        ...(await this.toField(orgId, unexistentOwners, LinkOrgField.Owners)),
+      ];
+    }
+
+    return ownersFinal;
+  }
+
   async toField(
     orgId: string,
     userList: string[],
