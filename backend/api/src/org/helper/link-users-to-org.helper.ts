@@ -18,7 +18,7 @@ export class LinkUsersOrgHelper {
 
     let ownersFinal = [...currentOwners];
 
-    if (currentOwners?.length > 0 && unexistentOwners.length > 0) {
+    if (unexistentOwners.length > 0) {
       ownersFinal = [
         ...ownersFinal,
         ...(await this.toField(orgId, unexistentOwners, LinkOrgField.Owners)),
@@ -26,6 +26,31 @@ export class LinkUsersOrgHelper {
     }
 
     return ownersFinal;
+  }
+
+  async resolveHopeCreators(
+    orgId: string,
+    currentHopeCreators: string[],
+    hopeCreatorsToLink: string[],
+  ): Promise<string[]> {
+    const unexistentHopeCreators: string[] = hopeCreatorsToLink.filter(
+      (user) => !currentHopeCreators.includes(user),
+    );
+
+    let hopeCreatorsFinal = [...currentHopeCreators];
+
+    if (unexistentHopeCreators.length > 0) {
+      hopeCreatorsFinal = [
+        ...hopeCreatorsFinal,
+        ...(await this.toField(
+          orgId,
+          unexistentHopeCreators,
+          LinkOrgField.HopeCreators,
+        )),
+      ];
+    }
+
+    return hopeCreatorsFinal;
   }
 
   async toField(
@@ -56,7 +81,7 @@ export class LinkUsersOrgHelper {
     return validUsersIdList;
   }
 
-  setUserAsOrgOwner(user: User, userToSave: User, orgId: string): User {
+  private setUserAsOrgOwner(user: User, userToSave: User, orgId: string): User {
     if (user.orgOwnerOf === undefined || user.orgOwnerOf === null) {
       userToSave = {
         ...user,
@@ -72,7 +97,11 @@ export class LinkUsersOrgHelper {
     return userToSave;
   }
 
-  setUserAsOrgHopeCreator(user: User, userToSave: User, orgId: string): User {
+  private setUserAsOrgHopeCreator(
+    user: User,
+    userToSave: User,
+    orgId: string,
+  ): User {
     if (user.hopeCreatorOf === undefined || user.hopeCreatorOf === null) {
       userToSave = {
         ...user,
