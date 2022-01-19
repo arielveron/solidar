@@ -6,10 +6,10 @@ import { Org } from './models/org.entity';
 import { v4 as uuid } from 'uuid';
 import { CurrentDateTime } from '../util/date.helpers';
 import { LinkOrgField } from '../util/org.enum';
-import { JwtPayload } from '../auth/dto/jwt.payload';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
 import { LinkUsersOrgHelper } from './helper/link-users-to-org.helper';
 import { UnlinkUsersOrgHelper } from './helper/unlink-users-from-org.helper';
+import { UserType } from '../user/models/user.type';
 
 @Injectable()
 export class OrgService {
@@ -32,7 +32,7 @@ export class OrgService {
 
   async createOrg(
     createOrgInput: CreateOrgInput,
-    user: JwtPayload,
+    user: UserType,
   ): Promise<Org> {
     const { orgName, owners, hopeCreators } = createOrgInput;
 
@@ -43,8 +43,6 @@ export class OrgService {
       owners,
       LinkOrgField.Owners,
     );
-
-    console.log('create org', canditateToOwners);
 
     if (!canditateToOwners || canditateToOwners?.length === 0)
       throw new Error(

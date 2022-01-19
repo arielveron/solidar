@@ -31,10 +31,11 @@ export class OrgResolver {
   /// Create Org
 
   @Mutation(() => OrgType)
-  createOrg(
+  async createOrg(
     @Args('createOrgInput') createOrgInput: CreateOrgInput,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() userJwt: JwtPayload,
   ): Promise<OrgType> {
+    const user = await this.userService.findOne(userJwt.id);
     return this.orgService.createOrg(createOrgInput, user);
   }
 
