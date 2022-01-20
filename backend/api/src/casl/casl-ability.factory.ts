@@ -12,8 +12,11 @@ import { Action } from './actions/action.enum';
 import { Hope } from '../hope/models/hope.entity';
 import { User } from '../user/models/user.entity';
 import { JwtPayload } from 'src/auth/dto/jwt.payload';
+import { Org } from '../org/models/org.entity';
 
-export type Subjects = InferSubjects<typeof Hope | typeof User> | 'all';
+export type Subjects =
+  | InferSubjects<typeof Hope | typeof User | typeof Org>
+  | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
 
@@ -29,8 +32,9 @@ export class CaslAbilityFactory {
     if (user.isAdmin) {
       can(Action.Manage, 'all'); // read-write access to everything
     } else {
-      can(Action.Create, Hope); // WARNING! permission reserved to managers of ORGs. Replace after capability created
-
+      if (user.isHopeCreator) {
+        can(Action.Create, Hope); // WARNING! permission reserved to managers of ORGs. Replace after capability created
+      }
       can(Action.Read, Hope);
       can(Action.Update, Hope, { createdBy: user.id });
 

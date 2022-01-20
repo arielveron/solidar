@@ -14,6 +14,12 @@ import { UserType } from '../user/models/user.type';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/dto/jwt.payload';
+import { UseGuards } from '@nestjs/common';
+import { PoliciesGuard } from '../casl/policies.guard';
+import { CheckPolicies } from 'src/casl/check-policies.decorator';
+import { AppAbility } from 'src/casl/casl-ability.factory';
+import { Action } from 'src/casl/actions/action.enum';
+import { Org } from './models/org.entity';
 
 @Resolver(() => OrgType)
 export class OrgResolver {
@@ -31,6 +37,8 @@ export class OrgResolver {
   /// Create Org
 
   @Mutation(() => OrgType)
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Org))
   async createOrg(
     @Args('createOrgInput') createOrgInput: CreateOrgInput,
     @CurrentUser() userJwt: JwtPayload,

@@ -7,12 +7,14 @@ import { Org } from './models/org.entity';
 import { AuthModule } from '../auth/auth.module';
 import { LinkUsersOrgHelper } from './helper/link-users-to-org.helper';
 import { UnlinkUsersOrgHelper } from './helper/unlink-users-from-org.helper';
+import { CaslModule } from '../casl/casl.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Org]),
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
+    CaslModule,
   ],
   providers: [
     OrgService,
