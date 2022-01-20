@@ -65,9 +65,20 @@ export class HopeResolver {
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Hope))
   async createHope(
     @Args('createHopeInput') createHopeInput: CreateHopeInput,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() userJwt: JwtPayload,
   ): Promise<Hope> {
-    const hope: Hope = await this.hopeService.createHope(createHopeInput, user);
+    const user = await this.userService.findOne(userJwt.id);
+    const { forOrg } = createHopeInput;
+
+    if (
+      !(user.orgOwnerOf.includes(forOrg) || user.hopeCreatorOf.includes(forOrg))
+    )
+      throw new Error(`User has no permissions to create Hopes for ${forOrg}`);
+
+    const hope: Hope = await this.hopeService.createHope(
+      createHopeInput,
+      userJwt,
+    );
     return hope;
   }
 
