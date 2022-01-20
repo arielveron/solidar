@@ -18,6 +18,9 @@ export class Hope {
 
   // object birth properties
   @Column()
+  forOrg: string;
+
+  @Column()
   isPublished: boolean;
 
   @Column()

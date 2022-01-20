@@ -31,13 +31,14 @@ export class HopeService {
     createHopeInput: CreateHopeInput,
     user: JwtPayload,
   ): Promise<Hope> {
-    const { subject, description } = createHopeInput;
+    const { subject, description, forOrg } = createHopeInput;
 
     const hope: Hope = {
       _id: null,
       id: uuid(),
       subject,
       description,
+      forOrg,
       isPublished: true,
       createdAt: CurrentDateTime(),
       createdBy: user.id,

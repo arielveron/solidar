@@ -5,7 +5,8 @@ import { Hope } from './models/hope.entity';
 import { HopeResolver } from './hope.resolver';
 import { HopeService } from './hope.service';
 import { CaslModule } from '../casl/casl.module';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
+import { OrgModule } from '../org/org.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from 'src/user/user.module';
     AuthModule,
     CaslModule,
     UserModule,
+    OrgModule,
   ],
   providers: [HopeResolver, HopeService],
 })

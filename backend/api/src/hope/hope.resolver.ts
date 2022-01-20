@@ -18,7 +18,9 @@ import { CheckPolicies } from '../casl/check-policies.decorator';
 import { UserService } from '../user/user.service';
 import { UserType } from '../user/models/user.type';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { JwtPayload } from 'src/auth/dto/jwt.payload';
+import { JwtPayload } from '../auth/dto/jwt.payload';
+import { OrgType } from '../org/models/org.type';
+import { OrgService } from '../org/org.service';
 
 @Resolver(() => HopeType)
 export class HopeResolver {
@@ -28,6 +30,7 @@ export class HopeResolver {
     private hopeService: HopeService,
     private caslAbilityFactory: CaslAbilityFactory,
     private userService: UserService,
+    private orgService: OrgService,
   ) {}
 
   /// Get a specific Hope
@@ -87,6 +90,13 @@ export class HopeResolver {
   async createdBy(@Parent() hope: HopeType): Promise<UserType | []> {
     if (hope.createdBy != null) {
       return this.userService.findOne(hope.createdBy);
+    }
+    return [];
+  }
+  @ResolveField(() => OrgType)
+  async forOrg(@Parent() hope: HopeType): Promise<OrgType | []> {
+    if (hope.createdBy != null) {
+      return this.orgService.findOne(hope.forOrg);
     }
     return [];
   }
