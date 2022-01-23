@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { OrgType } from 'src/org/models/org.type';
+import { OrgType } from '../../org/models/org.type';
 
 @ObjectType('User')
 export class UserType {
