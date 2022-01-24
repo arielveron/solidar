@@ -1,10 +1,8 @@
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { CaslModule } from '../casl/casl.module';
 import { OrgService } from '../org/org.service';
 import { CreateUserInput } from './dto/create-user.input';
-import { User } from './models/user.entity';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
@@ -12,6 +10,7 @@ describe('UsersRolver', () => {
   let resolver: UserResolver;
   const mockUserService = {
     createUser: jest.fn((dto) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = dto;
       return result;
     }),
@@ -50,6 +49,7 @@ describe('UsersRolver', () => {
         firstName: 'Ariel',
         lastName: 'Veron',
       };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = createUserInput;
 
       expect(resolver.createUser(createUserInput)).toEqual(result);
