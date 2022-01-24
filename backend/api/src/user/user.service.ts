@@ -89,7 +89,12 @@ export class UserService {
 
   async getValidUsers(userList: string[]): Promise<User[]> {
     const validUsers: User[] = [];
-    if (!userList || userList?.length === 0) return validUsers;
+    if (
+      userList === null ||
+      userList?.constructor !== Array ||
+      userList?.length === 0
+    )
+      return validUsers;
 
     for (const userId of userList) {
       const foundUser: User = await this.findOne(userId);
