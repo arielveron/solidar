@@ -6,7 +6,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
-describe('UsersRolver', () => {
+describe('UserRolver', () => {
   let resolver: UserResolver;
   const mockUserService = {
     createUser: jest.fn((dto) => {
