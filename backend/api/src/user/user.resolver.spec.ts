@@ -131,9 +131,42 @@ describe('UserRolver', () => {
       await expect(
         resolver.orgOwnerOf(user as UserType),
       ).resolves.toStrictEqual([]);
+      user = { anyField: '' };
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
       user = { orgOwnerOf: [] };
       await expect(
         resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+    });
+  });
+
+  describe('hopeCreatorOf', () => {
+    it('should pass a user without a valid hopeCreatorOf field and return a empty array', async () => {
+      let user = {};
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = null;
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { hopeCreatorOf: null };
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { hopeCreatorOf: '' };
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { anyField: '' };
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { hopeCreatorOf: [] };
+      await expect(
+        resolver.hopeCreatorOf(user as UserType),
       ).resolves.toStrictEqual([]);
     });
   });

@@ -69,7 +69,7 @@ export class UserResolver {
   /// Resolvers
   @ResolveField(() => [OrgType])
   async orgOwnerOf(@Parent() user: UserType): Promise<Org[] | []> {
-    if (Array.isArray(user?.orgOwnerOf) && user?.orgOwnerOf.length > 0) {
+    if (Array.isArray(user?.orgOwnerOf) && user.orgOwnerOf.length > 0) {
       return this.orgService.getManyOrgs(user.orgOwnerOf);
     }
     return [];
@@ -77,11 +77,7 @@ export class UserResolver {
 
   @ResolveField(() => [OrgType])
   async hopeCreatorOf(@Parent() user: UserType): Promise<Org[] | []> {
-    if (
-      user !== null &&
-      user?.hopeCreatorOf !== undefined &&
-      user?.hopeCreatorOf !== null
-    ) {
+    if (Array.isArray(user?.hopeCreatorOf) && user.hopeCreatorOf.length > 0) {
       return this.orgService.getManyOrgs(user.hopeCreatorOf);
     }
     return [];
