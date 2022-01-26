@@ -3,23 +3,31 @@ import { JwtPayload } from '../auth/dto/jwt.payload';
 import { CaslModule } from '../casl/casl.module';
 import { OrgService } from '../org/org.service';
 import { CreateUserInput } from './dto/create-user.input';
+import { UserType } from './models/user.type';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
 describe('UserRolver', () => {
   let resolver: UserResolver;
+  const database = [
+    {
+      id: '1',
+      username: 'Ariel',
+    },
+  ];
+
   const mockUserService = {
+    database,
     createUser: jest.fn((dto) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = dto;
       return result;
     }),
     listUsers: jest.fn(() => {
-      return [
-        {
-          username: 'Ariel',
-        },
-      ];
+      return database;
+    }),
+    findOne: jest.fn((id) => {
+      return database.find((user) => user.id === id);
     }),
   };
   const mockOrgService = {};
@@ -81,9 +89,52 @@ describe('UserRolver', () => {
 
       expect(resolver.users(user)).toEqual([
         {
+          id: '1',
           username: 'Ariel',
         },
       ]);
+    });
+  });
+
+  describe('user', () => {
+    it('call UserService.findOne and return a user by id', async () => {
+      const expectedUser = {
+        id: '1',
+        username: 'Ariel',
+      };
+
+      await expect(resolver.user('1')).resolves.toEqual(expectedUser);
+    });
+
+    it('call UserService.findOne and throw a user not found error', async () => {
+      await expect(resolver.user('invalid')).rejects.toEqual(
+        new Error('The user "invalid" was not found'),
+      );
+    });
+  });
+
+  describe('orgOwnerOf', () => {
+    it('should pass a user without a valid orgOwnerOf field and return a empty array', async () => {
+      let user = {};
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = null;
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { orgOwnerOf: null };
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { orgOwnerOf: '' };
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
+      user = { orgOwnerOf: [] };
+      await expect(
+        resolver.orgOwnerOf(user as UserType),
+      ).resolves.toStrictEqual([]);
     });
   });
 });
