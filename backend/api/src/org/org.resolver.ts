@@ -16,9 +16,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { UseGuards } from '@nestjs/common';
 import { PoliciesGuard } from '../casl/policies.guard';
-import { CheckPolicies } from 'src/casl/check-policies.decorator';
-import { AppAbility } from 'src/casl/casl-ability.factory';
-import { Action } from 'src/casl/actions/action.enum';
+import { CheckPolicies } from '../casl/check-policies.decorator';
+import { AppAbility } from '../casl/casl-ability.factory';
+import { Action } from '../casl/actions/action.enum';
 import { Org } from './models/org.entity';
 
 @Resolver(() => OrgType)

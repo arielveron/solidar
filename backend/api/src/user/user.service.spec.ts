@@ -22,8 +22,18 @@ describe('UserService', () => {
   const mockUserRepository = {
     database,
     findOne: jest.fn((ids) => {
-      const result = database.find((user) => user.id === ids.id);
+      let result;
+      if (ids.id) {
+        result = database.find((user) => user.id === ids.id);
+      } else if (ids.username) {
+        result = database.find((user) => user.username === ids.username);
+      }
       return result;
+    }),
+    find: jest.fn((filter) => {
+      if (!filter) {
+        return database;
+      }
     }),
   };
 
@@ -43,6 +53,45 @@ describe('UserService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('findUsername', () => {
+    it('should call Service.findUsername with "ariel" and return a valid username', async () => {
+      const expectedUser = {
+        id: '1',
+        username: 'ariel',
+      };
+      await expect(service.findUsername('ariel')).resolves.toEqual(
+        expectedUser,
+      );
+    });
+    it('should call Service.findUsername with "bogus" and return a undefined user', async () => {
+      const expectedUser = undefined;
+      await expect(service.findUsername('bogus')).resolves.toEqual(
+        expectedUser,
+      );
+    });
+  });
+
+  describe('listUsers', () => {
+    it('should call UserService without parameters and return a list of users in database', async () => {
+      const expectedUser = [
+        {
+          id: '1',
+          username: 'ariel',
+        },
+        {
+          id: '2',
+          username: 'eduardo',
+        },
+        {
+          id: '3',
+          username: 'veron',
+        },
+      ];
+
+      await expect(service.listUsers()).resolves.toEqual(expectedUser);
+    });
   });
 
   describe('getValidUsers', () => {
