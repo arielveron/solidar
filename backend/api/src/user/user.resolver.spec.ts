@@ -30,7 +30,9 @@ describe('UserRolver', () => {
       return database.find((user) => user.id === id);
     }),
   };
-  const mockOrgService = {};
+  const mockOrgService = {
+    getManyOrgs: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -140,6 +142,24 @@ describe('UserRolver', () => {
         resolver.orgOwnerOf(user as UserType),
       ).resolves.toStrictEqual([]);
     });
+
+    it('should NOT call orgService.getManyOrgs', () => {
+      jest.resetAllMocks();
+      const user = {
+        orgOwnerOf: [],
+      };
+      resolver.orgOwnerOf(user as UserType);
+      expect(mockOrgService.getManyOrgs).not.toHaveBeenCalled();
+    });
+
+    it('should call orgService.getManyOrgs', () => {
+      jest.resetAllMocks();
+      const user = {
+        orgOwnerOf: ['3123', '1212'],
+      };
+      resolver.orgOwnerOf(user as UserType);
+      expect(mockOrgService.getManyOrgs).toHaveBeenCalled();
+    });
   });
 
   describe('hopeCreatorOf', () => {
@@ -168,6 +188,24 @@ describe('UserRolver', () => {
       await expect(
         resolver.hopeCreatorOf(user as UserType),
       ).resolves.toStrictEqual([]);
+    });
+
+    it('should NOT call orgService.getManyOrgs', () => {
+      jest.resetAllMocks();
+      const user = {
+        hopeCreatorOf: [],
+      };
+      resolver.hopeCreatorOf(user as UserType);
+      expect(mockOrgService.getManyOrgs).not.toHaveBeenCalled();
+    });
+
+    it('should call orgService.getManyOrgs', () => {
+      jest.resetAllMocks();
+      const user = {
+        hopeCreatorOf: ['123', '1212'],
+      };
+      resolver.hopeCreatorOf(user as UserType);
+      expect(mockOrgService.getManyOrgs).toHaveBeenCalled();
     });
   });
 });
