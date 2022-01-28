@@ -4,12 +4,21 @@ import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { HopeResolver } from './hope.resolver';
 import { HopeService } from './hope.service';
 import { OrgService } from '../org/org.service';
+import { JwtPayload } from '../auth/dto/jwt.payload';
 
 describe('HopeResolver', () => {
   let resolver: HopeResolver;
 
-  const mockHopeService = {};
-  const mockCaslAbilityFactory = {};
+  const mockHopeService = {
+    getHope: jest.fn(() => {
+      return { id: '1', title: 'valid hope' };
+    }),
+  };
+  const mockCaslAbilityFactory = {
+    checkPolicy: jest.fn((user, action, hope) => {
+      return true;
+    }),
+  };
   const mockUserService = {};
   const mockOrgService = {};
 
@@ -29,5 +38,22 @@ describe('HopeResolver', () => {
 
   it('should be defined', () => {
     expect(resolver).toBeDefined();
+  });
+
+  describe('hope', () => {
+    it('should call Hope with "1" as an id and return a valid hope', async () => {
+      const expectedHope = {
+        id: '1',
+        title: 'valid hope',
+      };
+      const user: JwtPayload = {
+        id: '2321',
+        username: 'ariel',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+
+      await expect(resolver.hope('1', user)).resolves.toEqual(expectedHope);
+    });
   });
 });
