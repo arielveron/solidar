@@ -63,6 +63,20 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('findOne', () => {
+    it('should call Service.findOne with "1" and return a valid user', async () => {
+      const expectedUser = {
+        id: '1',
+        username: 'ariel',
+      };
+      await expect(service.findOne('1')).resolves.toEqual(expectedUser);
+    });
+    it('should call Service.findOne with "bogus" and return undefined', async () => {
+      const expectedUser = undefined;
+      await expect(service.findOne('bogus')).resolves.toEqual(expectedUser);
+    });
+  });
+
   describe('findUsername', () => {
     it('should call Service.findUsername with "ariel" and return a valid username', async () => {
       const expectedUser = {
