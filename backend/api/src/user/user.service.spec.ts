@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './models/user.entity';
 import { UserService } from './user.service';
+
 describe('UserService', () => {
   let service: UserService;
   const database = [
@@ -41,6 +42,12 @@ describe('UserService', () => {
       return [];
     }),
     save: jest.fn((user) => {
+      if (user.username === 'expecterror') {
+        throw new Error('Test instructed to fail on save to database');
+      }
+      return user;
+    }),
+    create: jest.fn((user) => {
       return user;
     }),
   };
@@ -61,6 +68,43 @@ describe('UserService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('createUser', () => {
+    it('should call Service.createUser with "{username: "Ariel", password: "prueba", firstName: "Ariel", lastName: "Veron"}" and must return a valid new username"', async () => {
+      const user = {
+        username: 'Ariel',
+        password: 'prueba',
+        firstName: 'Ariel',
+        lastName: 'Veron',
+      };
+
+      const expectedUser = {
+        _id: null,
+        id: expect.any(String),
+        username: 'ariel',
+        firstName: 'Ariel',
+        lastName: 'Veron',
+        orgOwnerOf: [],
+        hopeCreatorOf: [],
+        isAdmin: false,
+        enabled: true,
+        createdAt: expect.any(String),
+      };
+      await expect(service.createUser(user)).resolves.toEqual(expectedUser);
+    });
+    it('should call Service.createUser with username: "expectError" and must return a valid new username"', async () => {
+      const user = {
+        username: 'expectError',
+        password: 'prueba',
+        firstName: 'Ariel',
+        lastName: 'Veron',
+      };
+
+      await expect(service.createUser(user)).rejects.toEqual(
+        new Error('Error saving to DB'),
+      );
+    });
   });
 
   describe('findOne', () => {
