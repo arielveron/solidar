@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { UserType } from 'src/user/models/user.type';
+import { UserType } from '../../user/models/user.type';
 import { OrgType } from '../../org/models/org.type';
 
 @ObjectType('Hope')
