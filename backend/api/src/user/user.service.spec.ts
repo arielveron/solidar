@@ -34,6 +34,14 @@ describe('UserService', () => {
       if (!filter) {
         return database;
       }
+      if (JSON.stringify(filter) === '{"where":{"id":{"$in":["1"]}}}')
+        return [database[0]];
+      if (JSON.stringify(filter) === '{"where":{"id":{"$in":["1","2"]}}}')
+        return [database[0], database[1]];
+      return [];
+    }),
+    save: jest.fn((user) => {
+      return user;
     }),
   };
 
@@ -91,6 +99,46 @@ describe('UserService', () => {
       ];
 
       await expect(service.listUsers()).resolves.toEqual(expectedUser);
+    });
+  });
+
+  describe('save', () => {
+    it('should call UserService.save and send an User & must return the sended user', async () => {
+      const user = {
+        id: '1',
+        username: 'ariel',
+      };
+      const expectedUser = {
+        id: '1',
+        username: 'ariel',
+      };
+
+      await expect(service.save(user as User)).resolves.toEqual(expectedUser);
+    });
+  });
+
+  describe('getManyUsers', () => {
+    it('should call UserService.getManyUsers with ["1"] and return one valid user', async () => {
+      const expectedUser = [{ id: '1', username: 'ariel' }];
+
+      await expect(service.getManyUsers(['1'])).resolves.toEqual(expectedUser);
+    });
+
+    it('should call UserService.getManyUsers with ["1","2"] and return two valid user', async () => {
+      const expectedUser = [
+        { id: '1', username: 'ariel' },
+        { id: '2', username: 'eduardo' },
+      ];
+
+      await expect(service.getManyUsers(['1', '2'])).resolves.toEqual(
+        expectedUser,
+      );
+    });
+
+    it('should call UserService.getManyUsers with ["1"] and return one valid user', async () => {
+      const expectedUser = [{ id: '1', username: 'ariel' }];
+
+      await expect(service.getManyUsers(['1'])).resolves.toEqual(expectedUser);
     });
   });
 
