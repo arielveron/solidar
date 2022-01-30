@@ -90,11 +90,11 @@ export class HopeResolver {
 
   /// Resolvers - Functions to instruct GraphQL on how to connect fields with entities
   @ResolveField(() => UserType)
-  async createdBy(@Parent() hope: HopeType): Promise<UserType | []> {
-    if (hope.createdBy != null) {
+  async createdBy(@Parent() hope: HopeType): Promise<UserType | undefined> {
+    if (hope.createdBy) {
       return this.userService.findOne(hope.createdBy);
     }
-    return [];
+    return null;
   }
   @ResolveField(() => OrgType)
   async forOrg(@Parent() hope: HopeType): Promise<OrgType | []> {

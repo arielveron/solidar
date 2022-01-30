@@ -6,6 +6,7 @@ import { HopeService } from './hope.service';
 import { OrgService } from '../org/org.service';
 import { JwtPayload } from '../auth/dto/jwt.payload';
 import { CreateHopeInput } from './dto/create-hope.input';
+import { HopeType } from './models/hope.type';
 
 describe('HopeResolver', () => {
   let resolver: HopeResolver;
@@ -230,6 +231,54 @@ describe('HopeResolver', () => {
 
       await expect(resolver.createHope(hope3, user3)).rejects.toEqual(
         new Error('User has no permissions to create Hopes for 124124'),
+      );
+    });
+  });
+
+  describe('createdBy, field resolver', () => {
+    it('should call createdBy with a proper hope with createdBy defined and return the said user', async () => {
+      const hope: HopeType = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Testing desc',
+        createdAt: 'date',
+        forOrg: '1',
+        isPublished: true,
+        createdBy: '1',
+      };
+      const expectedUser = {
+        id: '1',
+        username: 'ariel',
+        isAdmin: true,
+        orgOwnerOf: ['123123'],
+      };
+      await expect(resolver.createdBy(hope)).resolves.toEqual(expectedUser);
+    });
+    it('should call createdBy with a hope createdBy an inexistent user and return null', async () => {
+      const hope2: HopeType = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Hope with an inexistent user in createdBy field',
+        createdAt: 'date',
+        forOrg: '1',
+        isPublished: true,
+        createdBy: '6',
+      };
+      const expectedUser2 = null;
+      await expect(resolver.createdBy(hope2)).resolves.toEqual(expectedUser2);
+    });
+    it('should call createdBy with a hope without createdBy field and return null', async () => {
+      const hope2 = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Hope without createdBy field',
+        createdAt: 'date',
+        forOrg: '1',
+        isPublished: true,
+      };
+      const expectedUser2 = null;
+      await expect(resolver.createdBy(hope2 as HopeType)).resolves.toEqual(
+        expectedUser2,
       );
     });
   });
