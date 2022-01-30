@@ -10,14 +10,14 @@ import { CreateHopeInput } from './dto/create-hope.input';
 describe('HopeResolver', () => {
   let resolver: HopeResolver;
 
-  const database = [{ id: '1', title: 'valid hope' }];
+  const hopesDatabase = [{ id: '1', title: 'valid hope' }];
   const mockHopeService = {
     getHope: jest.fn((id: string) => {
-      const result = database.find((hope) => hope.id === id);
+      const result = hopesDatabase.find((hope) => hope.id === id);
       return result;
     }),
     getHopes: jest.fn(() => {
-      return database;
+      return hopesDatabase;
     }),
     createHope: jest.fn((createHopeInput, user) => {
       const createdHope = {
@@ -50,6 +50,25 @@ describe('HopeResolver', () => {
             username: 'eduardo',
             isAdmin: true,
             hopeCreatorOf: ['124124'],
+          };
+        case '3':
+          return {
+            id: '3',
+            username: 'alejandro',
+            isAdmin: true,
+            hopeCreatorOf: ['125125'],
+          };
+        case '4':
+          return {
+            id: '4',
+            username: 'gisela',
+            isAdmin: true,
+          };
+        case '5':
+          return {
+            id: '5',
+            username: 'celina',
+            isAdmin: false,
           };
       }
       return null;
@@ -163,6 +182,54 @@ describe('HopeResolver', () => {
 
       await expect(resolver.createHope(hope2, user2)).resolves.toEqual(
         expectedHope2,
+      );
+    });
+
+    it('should call createHope with invalid user and throw an Unauthorized error', async () => {
+      const hope1: CreateHopeInput = {
+        subject: 'New hope',
+        description: 'New hope',
+        forOrg: '123123',
+      };
+      const user1: JwtPayload = {
+        id: '3',
+        username: 'alejandro',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+
+      await expect(resolver.createHope(hope1, user1)).rejects.toEqual(
+        new Error('User has no permissions to create Hopes for 123123'),
+      );
+      const hope2: CreateHopeInput = {
+        subject: 'New hope',
+        description: 'New hope',
+        forOrg: '123123',
+      };
+      const user2: JwtPayload = {
+        id: '4',
+        username: 'gisela',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+
+      await expect(resolver.createHope(hope2, user2)).rejects.toEqual(
+        new Error('User has no permissions to create Hopes for 123123'),
+      );
+      const hope3: CreateHopeInput = {
+        subject: 'New hope',
+        description: 'New hope',
+        forOrg: '124124',
+      };
+      const user3: JwtPayload = {
+        id: '5',
+        username: 'celina',
+        isAdmin: false,
+        isHopeCreator: false,
+      };
+
+      await expect(resolver.createHope(hope3, user3)).rejects.toEqual(
+        new Error('User has no permissions to create Hopes for 124124'),
       );
     });
   });
