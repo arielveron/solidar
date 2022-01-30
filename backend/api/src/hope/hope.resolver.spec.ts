@@ -9,9 +9,11 @@ import { JwtPayload } from '../auth/dto/jwt.payload';
 describe('HopeResolver', () => {
   let resolver: HopeResolver;
 
+  const database = [{ id: '1', title: 'valid hope' }];
   const mockHopeService = {
-    getHope: jest.fn(() => {
-      return { id: '1', title: 'valid hope' };
+    getHope: jest.fn((id: string) => {
+      const result = database.find((hope) => hope.id === id);
+      return result;
     }),
   };
   const mockCaslAbilityFactory = {
@@ -54,6 +56,18 @@ describe('HopeResolver', () => {
       };
 
       await expect(resolver.hope('1', user)).resolves.toEqual(expectedHope);
+    });
+    it('should call Hope with "bogus" as an id and throw an error', async () => {
+      const user: JwtPayload = {
+        id: '1',
+        username: 'ariel',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+
+      await expect(resolver.hope('bogus', user)).rejects.toEqual(
+        new Error('The hope "bogus" was not found'),
+      );
     });
   });
 });
