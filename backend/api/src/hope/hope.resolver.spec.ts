@@ -15,6 +15,9 @@ describe('HopeResolver', () => {
       const result = database.find((hope) => hope.id === id);
       return result;
     }),
+    getHopes: jest.fn(() => {
+      return database;
+    }),
   };
   const mockCaslAbilityFactory = {
     checkPolicy: jest.fn((user, action, hope) => {
@@ -68,6 +71,20 @@ describe('HopeResolver', () => {
       await expect(resolver.hope('bogus', user)).rejects.toEqual(
         new Error('The hope "bogus" was not found'),
       );
+    });
+  });
+
+  describe('getHopes', () => {
+    it('should call getHopes and return all hopes in DB', async () => {
+      const user: JwtPayload = {
+        id: '1',
+        username: 'ariel',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+      const expectedHopes = [{ id: '1', title: 'valid hope' }];
+
+      await expect(resolver.hopes(user)).resolves.toEqual(expectedHopes);
     });
   });
 });

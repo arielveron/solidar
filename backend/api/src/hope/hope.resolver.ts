@@ -55,7 +55,7 @@ export class HopeResolver {
   @UseGuards(PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Hope))
   @Query(() => [HopeType])
-  hopes(@CurrentUser() user: JwtPayload): Promise<Hope[]> {
+  async hopes(@CurrentUser() user: JwtPayload): Promise<Hope[]> {
     this.logger.log(`User "${user.username}" requested all the Hopes`);
 
     return this.hopeService.getHopes();
