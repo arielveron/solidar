@@ -5,6 +5,7 @@ import { HopeResolver } from './hope.resolver';
 import { HopeService } from './hope.service';
 import { OrgService } from '../org/org.service';
 import { JwtPayload } from '../auth/dto/jwt.payload';
+import { CreateHopeInput } from './dto/create-hope.input';
 
 describe('HopeResolver', () => {
   let resolver: HopeResolver;
@@ -18,13 +19,42 @@ describe('HopeResolver', () => {
     getHopes: jest.fn(() => {
       return database;
     }),
+    createHope: jest.fn((createHopeInput, user) => {
+      const createdHope = {
+        id: user.id,
+        ...createHopeInput,
+        createdBy: user.id,
+      };
+      return createdHope;
+    }),
   };
   const mockCaslAbilityFactory = {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     checkPolicy: jest.fn((user, action, hope) => {
       return true;
     }),
   };
-  const mockUserService = {};
+  const mockUserService = {
+    findOne: jest.fn((userId) => {
+      switch (userId) {
+        case '1':
+          return {
+            id: '1',
+            username: 'ariel',
+            isAdmin: true,
+            orgOwnerOf: ['123123'],
+          };
+        case '2':
+          return {
+            id: '1',
+            username: 'eduardo',
+            isAdmin: true,
+            hopeCreatorOf: ['124124'],
+          };
+      }
+      return null;
+    }),
+  };
   const mockOrgService = {};
 
   beforeEach(async () => {
@@ -85,6 +115,55 @@ describe('HopeResolver', () => {
       const expectedHopes = [{ id: '1', title: 'valid hope' }];
 
       await expect(resolver.hopes(user)).resolves.toEqual(expectedHopes);
+    });
+  });
+
+  describe('createHope', () => {
+    it('should receive a new hope and return the created hope', async () => {
+      const hope1: CreateHopeInput = {
+        subject: 'New hope',
+        description: 'New hope',
+        forOrg: '123123',
+      };
+      const user1: JwtPayload = {
+        id: '1',
+        username: 'ariel',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+      const expectedHope1 = {
+        id: '1',
+        createdBy: '1',
+        description: 'New hope',
+        forOrg: '123123',
+        subject: 'New hope',
+      };
+
+      await expect(resolver.createHope(hope1, user1)).resolves.toEqual(
+        expectedHope1,
+      );
+      const hope2: CreateHopeInput = {
+        subject: 'New hope 2',
+        description: 'New hope 2',
+        forOrg: '124124',
+      };
+      const user2: JwtPayload = {
+        id: '2',
+        username: 'eduardo',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+      const expectedHope2 = {
+        id: '2',
+        createdBy: '2',
+        description: 'New hope 2',
+        forOrg: '124124',
+        subject: 'New hope 2',
+      };
+
+      await expect(resolver.createHope(hope2, user2)).resolves.toEqual(
+        expectedHope2,
+      );
     });
   });
 });

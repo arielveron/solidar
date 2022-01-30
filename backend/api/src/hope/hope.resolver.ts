@@ -74,7 +74,10 @@ export class HopeResolver {
     const { forOrg } = createHopeInput;
 
     if (
-      !(user.orgOwnerOf.includes(forOrg) || user.hopeCreatorOf.includes(forOrg))
+      !(
+        user.orgOwnerOf?.includes(forOrg) ||
+        user.hopeCreatorOf?.includes(forOrg)
+      )
     )
       throw new Error(`User has no permissions to create Hopes for ${forOrg}`);
 
