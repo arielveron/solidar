@@ -93,7 +93,7 @@ describe('UserService', () => {
       };
       await expect(service.createUser(user)).resolves.toEqual(expectedUser);
     });
-    it('should call Service.createUser with username: "expectError" and must return a valid new username"', async () => {
+    it('should call Service.createUser with username: "expectError" and must return an error"', async () => {
       const user = {
         username: 'expectError',
         password: 'prueba',
