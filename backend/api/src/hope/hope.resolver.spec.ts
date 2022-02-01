@@ -71,17 +71,23 @@ describe('HopeResolver', () => {
             username: 'celina',
             isAdmin: false,
           };
+        default:
+          return null;
       }
-      return null;
     }),
   };
   const mockOrgService = {
-    findOne: jest.fn(() => {
-      return {
-        id: '1',
-        orgName: 'ABC',
-        enabled: true,
-      };
+    findOne: jest.fn((orgId) => {
+      switch (orgId) {
+        case '1':
+          return {
+            id: '1',
+            orgName: 'ABC',
+            enabled: true,
+          };
+        default:
+          return null;
+      }
     }),
   };
 
@@ -308,6 +314,34 @@ describe('HopeResolver', () => {
         enabled: true,
       };
       await expect(resolver.forOrg(hope)).resolves.toEqual(expectedOrg);
+    });
+
+    it('should call forOrg with a hope forOrg an inexistent Org and return null', async () => {
+      const hope: HopeType = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Hope with an inexistent org in forOrg field',
+        createdAt: 'date',
+        forOrg: '2',
+        isPublished: true,
+        createdBy: '1',
+      };
+      const expectedHope = null;
+      await expect(resolver.forOrg(hope)).resolves.toEqual(expectedHope);
+    });
+
+    it('should call forOrg with a hope without forOrg field and return null', async () => {
+      const hope = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Hope without forOrg field',
+        createdAt: 'date',
+        isPublished: true,
+      };
+      const expectedHope = null;
+      await expect(resolver.forOrg(hope as HopeType)).resolves.toEqual(
+        expectedHope,
+      );
     });
   });
 });

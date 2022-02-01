@@ -98,9 +98,9 @@ export class HopeResolver {
   }
   @ResolveField(() => OrgType)
   async forOrg(@Parent() hope: HopeType): Promise<OrgType | []> {
-    if (hope.createdBy != null) {
+    if (hope.forOrg) {
       return this.orgService.findOne(hope.forOrg);
     }
-    return [];
+    return null;
   }
 }
