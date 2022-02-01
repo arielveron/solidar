@@ -75,7 +75,15 @@ describe('HopeResolver', () => {
       return null;
     }),
   };
-  const mockOrgService = {};
+  const mockOrgService = {
+    findOne: jest.fn(() => {
+      return {
+        id: '1',
+        orgName: 'ABC',
+        enabled: true,
+      };
+    }),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -280,6 +288,26 @@ describe('HopeResolver', () => {
       await expect(resolver.createdBy(hope2 as HopeType)).resolves.toEqual(
         expectedUser2,
       );
+    });
+  });
+
+  describe('forOrg, field resolver', () => {
+    it('should call forOrg with a proper hope with forOrg defined and return the said org', async () => {
+      const hope: HopeType = {
+        id: '1',
+        subject: 'Testing',
+        description: 'Testing desc',
+        createdAt: 'date',
+        forOrg: '1',
+        isPublished: true,
+        createdBy: '1',
+      };
+      const expectedOrg = {
+        id: '1',
+        orgName: 'ABC',
+        enabled: true,
+      };
+      await expect(resolver.forOrg(hope)).resolves.toEqual(expectedOrg);
     });
   });
 });
