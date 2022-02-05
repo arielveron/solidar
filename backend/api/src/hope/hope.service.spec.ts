@@ -24,6 +24,9 @@ describe('HopeService', () => {
       const result = hopesDatabase.find((hope) => hope.id === param.id);
       return result;
     }),
+    find: jest.fn(() => {
+      return hopesDatabase;
+    }),
   };
 
   beforeEach(async () => {
@@ -64,6 +67,14 @@ describe('HopeService', () => {
       expect(service.getHope('')).resolves.toEqual(expectedHope);
       expect(service.getHope(null)).resolves.toEqual(expectedHope);
       expect(service.getHope(undefined)).resolves.toEqual(expectedHope);
+    });
+  });
+
+  describe('getHopes', () => {
+    it('should call getHopes and return all hopes in hopesDatabase', () => {
+      const expectedHopes = hopesDatabase;
+
+      expect(service.getHopes()).resolves.toEqual(expectedHopes);
     });
   });
 });
