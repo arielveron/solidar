@@ -42,7 +42,7 @@ describe('HopeService', () => {
   });
 
   describe('getHope', () => {
-    it('should call getHope with and id="1" and return a valid hope', async () => {
+    it('should call getHope with an id="1" and return a valid hope', async () => {
       const expectedHope: Hope = {
         _id: expect.any(String),
         id: '1',
@@ -55,6 +55,15 @@ describe('HopeService', () => {
       };
 
       expect(service.getHope('1')).resolves.toEqual(expectedHope);
+    });
+
+    it('should call getHope with an invalid id and return an undefined hope', async () => {
+      const expectedHope = undefined;
+
+      expect(service.getHope('2')).resolves.toEqual(expectedHope);
+      expect(service.getHope('')).resolves.toEqual(expectedHope);
+      expect(service.getHope(null)).resolves.toEqual(expectedHope);
+      expect(service.getHope(undefined)).resolves.toEqual(expectedHope);
     });
   });
 });
