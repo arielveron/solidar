@@ -33,6 +33,13 @@ describe('HopeService', () => {
       return hope;
     }),
     save: jest.fn((hope) => {
+      console.log(hope);
+      if (hope.subject === 'FAIL') {
+        // code expects NestJs errors include a stack property
+        // I'm mocking it here because it's part of NestJS. I'm not testing that
+        return Promise.reject({ stack: 'Stack' });
+      }
+
       const result: Hope = {
         ...hope,
         _id: 'someDatabaseId',
@@ -118,6 +125,24 @@ describe('HopeService', () => {
 
       await expect(service.createHope(createHopeInput, user)).resolves.toEqual(
         expectedHope,
+      );
+    });
+
+    it('should call createHope with a valid createHopeInput and fail to save to database', async () => {
+      const createHopeInput: CreateHopeInput = {
+        subject: 'FAIL',
+        description: 'Hope destined to fail on save to DB',
+        forOrg: 'org',
+      };
+      const user: JwtPayload = {
+        id: '1',
+        username: 'ariel',
+        isAdmin: true,
+        isHopeCreator: true,
+      };
+
+      await expect(service.createHope(createHopeInput, user)).rejects.toEqual(
+        new Error('Error saving to DB'),
       );
     });
   });
