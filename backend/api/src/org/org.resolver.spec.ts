@@ -6,6 +6,7 @@ import { CreateOrgInput } from './dto/create-org.input';
 import { OrgType } from './models/org.type';
 import { OrgResolver } from './org.resolver';
 import { OrgService } from './org.service';
+import { RelationOrgToUsers } from './dto/relation-org-users.input';
 
 describe('', () => {
   let resolver: OrgResolver;
@@ -38,6 +39,16 @@ describe('', () => {
         return result;
       },
     ),
+    linkOrgToUsers: jest.fn((relationOrgToUsers: RelationOrgToUsers) => {
+      const result: OrgType = {
+        id: '1',
+        orgName: 'Org 1',
+        owners: [...relationOrgToUsers.owners],
+        hopeCreators: [],
+        enabled: true,
+      };
+      return result;
+    }),
   };
   const mockUserService = {
     findOne: jest.fn((user: JwtPayload) => {
@@ -104,6 +115,27 @@ describe('', () => {
       await expect(resolver.createOrg(createOrgInput, user)).resolves.toEqual(
         expectedOrg,
       );
+    });
+
+    describe('linkOrgToUsers', () => {
+      it('should call to linkOrgToUsers with a valid Org id and valid User ID as owners and must return an Org with that user attached as owner', () => {
+        const expectedOrg: OrgType = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: ['1'],
+          hopeCreators: [],
+          enabled: true,
+        };
+        const relationOrgToUsers: RelationOrgToUsers = {
+          orgId: '1',
+          owners: ['1'],
+          hopeCreators: [],
+        };
+
+        expect(resolver.linkOrgToUsers(relationOrgToUsers)).toEqual(
+          expectedOrg,
+        );
+      });
     });
   });
 });
