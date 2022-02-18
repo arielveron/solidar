@@ -7,6 +7,7 @@ import { OrgType } from './models/org.type';
 import { OrgResolver } from './org.resolver';
 import { OrgService } from './org.service';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
+import { UserType } from '../user/models/user.type';
 
 describe('', () => {
   let resolver: OrgResolver;
@@ -64,6 +65,20 @@ describe('', () => {
   const mockUserService = {
     findOne: jest.fn((user: JwtPayload) => {
       return user;
+    }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getManyUsers: jest.fn((owners) => {
+      return [
+        {
+          id: '1',
+          firstName: 'Ariel',
+          lastName: 'Veron',
+          username: 'ariel',
+          orgOwnerOf: ['1'],
+          hopeCreatorOf: [],
+          isAdmin: false,
+        },
+      ];
     }),
   };
   const mockCaslAbilityFactory = {};
@@ -167,6 +182,30 @@ describe('', () => {
         expect(resolver.unlinkOrgFromUsers(relationOrgToUsers)).toEqual(
           expectedOrg,
         );
+      });
+    });
+
+    describe('Owners - Resolver field', () => {
+      it('should call owners to get all owners listed in GraphQL field with valid owners list and must return owners (users) list', async () => {
+        const expectedOwners: UserType[] = [
+          {
+            id: '1',
+            firstName: 'Ariel',
+            lastName: 'Veron',
+            username: 'ariel',
+            orgOwnerOf: ['1'],
+            hopeCreatorOf: [],
+            isAdmin: false,
+          },
+        ];
+        const org: OrgType = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: ['1'],
+          hopeCreators: [],
+          enabled: true,
+        };
+        await expect(resolver.owners(org)).resolves.toEqual(expectedOwners);
       });
     });
   });
