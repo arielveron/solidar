@@ -68,17 +68,21 @@ describe('', () => {
     }),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getManyUsers: jest.fn((owners) => {
-      return [
-        {
-          id: '1',
-          firstName: 'Ariel',
-          lastName: 'Veron',
-          username: 'ariel',
-          orgOwnerOf: ['1'],
-          hopeCreatorOf: [],
-          isAdmin: false,
-        },
-      ];
+      if (owners.toString() === ['1'].toString()) {
+        return [
+          {
+            id: '1',
+            firstName: 'Ariel',
+            lastName: 'Veron',
+            username: 'ariel',
+            orgOwnerOf: ['1'],
+            hopeCreatorOf: [],
+            isAdmin: false,
+          },
+        ];
+      } else {
+        return [];
+      }
     }),
   };
   const mockCaslAbilityFactory = {};
@@ -206,6 +210,40 @@ describe('', () => {
           enabled: true,
         };
         await expect(resolver.owners(org)).resolves.toEqual(expectedOwners);
+      });
+
+      it('should call owners to get all owners listed in GraphQL field with invalid owners list and must return an empty array', async () => {
+        const expectedOwners: [] = [];
+        const org: OrgType = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: [],
+          hopeCreators: [],
+          enabled: true,
+        };
+        await expect(resolver.owners(org)).resolves.toEqual(expectedOwners);
+
+        const org2 = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: '1',
+          hopeCreators: [],
+          enabled: true,
+        };
+        await expect(
+          resolver.owners(org2 as unknown as OrgType),
+        ).resolves.toEqual(expectedOwners);
+        await expect(resolver.owners(org)).resolves.toEqual(expectedOwners);
+
+        const org3 = {
+          id: '1',
+          orgName: 'Org 1',
+          hopeCreators: [],
+          enabled: true,
+        };
+        await expect(resolver.owners(org3 as OrgType)).resolves.toEqual(
+          expectedOwners,
+        );
       });
     });
   });
