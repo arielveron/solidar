@@ -44,6 +44,17 @@ describe('', () => {
         id: '1',
         orgName: 'Org 1',
         owners: [...relationOrgToUsers.owners],
+        hopeCreators: [...relationOrgToUsers.hopeCreators],
+        enabled: true,
+      };
+      return result;
+    }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    unlinkOrgFromUsers: jest.fn((relationOrgToUsers: RelationOrgToUsers) => {
+      const result: OrgType = {
+        id: '1',
+        orgName: 'Org 1',
+        owners: [],
         hopeCreators: [],
         enabled: true,
       };
@@ -133,6 +144,27 @@ describe('', () => {
         };
 
         expect(resolver.linkOrgToUsers(relationOrgToUsers)).toEqual(
+          expectedOrg,
+        );
+      });
+    });
+
+    describe('unlinkOrgFromUsers', () => {
+      it('should call to unlinkOrgFromUsers with a valid Org id and valid User ID as owner and must return and Org with that user detached', () => {
+        const expectedOrg: OrgType = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: [],
+          hopeCreators: [],
+          enabled: true,
+        };
+        const relationOrgToUsers: RelationOrgToUsers = {
+          orgId: '1',
+          owners: ['1'],
+          hopeCreators: [],
+        };
+
+        expect(resolver.unlinkOrgFromUsers(relationOrgToUsers)).toEqual(
           expectedOrg,
         );
       });
