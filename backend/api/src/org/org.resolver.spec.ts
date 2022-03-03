@@ -245,7 +245,6 @@ describe('', () => {
         await expect(
           resolver.owners(org2 as unknown as OrgType),
         ).resolves.toEqual(expectedOwners);
-        await expect(resolver.owners(org)).resolves.toEqual(expectedOwners);
 
         const org3 = {
           id: '1',
@@ -283,6 +282,41 @@ describe('', () => {
           expectedHopeCreators,
         );
       });
+    });
+
+    it('should call hopeCreators to get all hopeCreators listed in GraphQL field with invalid hopeCreators list and must return an empty array', async () => {
+      const expectedHopeCreators: [] = [];
+      const org: OrgType = {
+        id: '1',
+        orgName: 'Org 1',
+        owners: [],
+        hopeCreators: [],
+        enabled: true,
+      };
+      await expect(resolver.hopeCreators(org)).resolves.toEqual(
+        expectedHopeCreators,
+      );
+
+      const org2 = {
+        id: '1',
+        orgName: 'Org 1',
+        owners: [],
+        hopeCreators: '1',
+        enabled: true,
+      };
+      await expect(
+        resolver.hopeCreators(org2 as unknown as OrgType),
+      ).resolves.toEqual(expectedHopeCreators);
+
+      const org3 = {
+        id: '1',
+        orgName: 'Org 1',
+        owners: [],
+        enabled: true,
+      };
+      await expect(resolver.hopeCreators(org3 as OrgType)).resolves.toEqual(
+        expectedHopeCreators,
+      );
     });
   });
 });
