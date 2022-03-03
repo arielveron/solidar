@@ -73,7 +73,7 @@ export class OrgResolver {
 
   @ResolveField(() => [UserType])
   async hopeCreators(@Parent() org: OrgType): Promise<UserType[] | []> {
-    if (org.hopeCreators != null) {
+    if (Array.isArray(org.hopeCreators) && org.hopeCreators.length > 0) {
       return this.userService.getManyUsers(org.hopeCreators);
     }
     return [];

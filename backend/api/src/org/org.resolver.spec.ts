@@ -67,8 +67,8 @@ describe('', () => {
       return user;
     }),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getManyUsers: jest.fn((owners) => {
-      if (owners.toString() === ['1'].toString()) {
+    getManyUsers: jest.fn((user) => {
+      if (user.toString() === ['1'].toString()) {
         return [
           {
             id: '1',
@@ -77,6 +77,18 @@ describe('', () => {
             username: 'ariel',
             orgOwnerOf: ['1'],
             hopeCreatorOf: [],
+            isAdmin: false,
+          },
+        ];
+      } else if (user.toString() === ['2'].toString()) {
+        return [
+          {
+            id: '2',
+            firstName: 'Ariel',
+            lastName: 'Veron',
+            username: 'ariel',
+            orgOwnerOf: [],
+            hopeCreatorOf: ['1'],
             isAdmin: false,
           },
         ];
@@ -243,6 +255,32 @@ describe('', () => {
         };
         await expect(resolver.owners(org3 as OrgType)).resolves.toEqual(
           expectedOwners,
+        );
+      });
+    });
+
+    describe('hopeCreators - Resolver field', () => {
+      it('should call hopeCreators to get all hope creators listed in GraphQL field with valid hope creators list and must return users list', async () => {
+        const expectedHopeCreators: UserType[] = [
+          {
+            id: '2',
+            firstName: 'Ariel',
+            lastName: 'Veron',
+            username: 'ariel',
+            orgOwnerOf: [],
+            hopeCreatorOf: ['1'],
+            isAdmin: false,
+          },
+        ];
+        const org: OrgType = {
+          id: '1',
+          orgName: 'Org 1',
+          owners: [],
+          hopeCreators: ['2'],
+          enabled: true,
+        };
+        await expect(resolver.hopeCreators(org)).resolves.toEqual(
+          expectedHopeCreators,
         );
       });
     });
