@@ -9,7 +9,7 @@ import { OrgService } from './org.service';
 import { RelationOrgToUsers } from './dto/relation-org-users.input';
 import { UserType } from '../user/models/user.type';
 
-describe('', () => {
+describe('OrgResolver', () => {
   let resolver: OrgResolver;
 
   const orgDatabase: OrgType[] = [
