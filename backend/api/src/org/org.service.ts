@@ -44,7 +44,7 @@ export class OrgService {
       LinkOrgField.Owners,
     );
 
-    if (!canditateToOwners || canditateToOwners?.length === 0)
+    if (!Array.isArray(canditateToOwners) || canditateToOwners.length === 0)
       throw new Error(
         `At least a valid user is required as Org owner. The specified "${owners.join(
           '","',
