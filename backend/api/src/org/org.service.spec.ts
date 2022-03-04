@@ -22,6 +22,7 @@ describe('OrgService', () => {
           createdBy: '1',
           createdAt: '2022-03-03T21:51:00',
         };
+      return null;
     }),
   };
   const mockLinkUsersOrgHelper = {};
@@ -58,6 +59,14 @@ describe('OrgService', () => {
       };
 
       await expect(service.findOne('1')).resolves.toEqual(expectedOrg);
+    });
+
+    it('should call findOne with an invalid id and return undefined', async () => {
+      const expectedOrg = null;
+
+      await expect(service.findOne('2')).resolves.toEqual(expectedOrg);
+      await expect(service.findOne('')).resolves.toEqual(expectedOrg);
+      await expect(service.findOne(null)).resolves.toEqual(expectedOrg);
     });
   });
 });
