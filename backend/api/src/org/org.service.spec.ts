@@ -1,9 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserType } from '../user/models/user.type';
+import { CreateOrgInput } from './dto/create-org.input';
 import { LinkUsersOrgHelper } from './helper/link-users-to-org.helper';
 import { UnlinkUsersOrgHelper } from './helper/unlink-users-from-org.helper';
 import { Org } from './models/org.entity';
 import { OrgService } from './org.service';
+import { LinkOrgField } from '../util/org.enum';
 
 describe('OrgService', () => {
   let service: OrgService;
@@ -38,8 +41,19 @@ describe('OrgService', () => {
         },
       ];
     }),
+    create: jest.fn((org) => {
+      return { ...org, _id: 'someId' };
+    }),
+    save: jest.fn((org) => {
+      return org;
+    }),
   };
-  const mockLinkUsersOrgHelper = {};
+  const mockLinkUsersOrgHelper = {
+    toField: jest.fn((orgId, userList, field: LinkOrgField) => {
+      if (field === LinkOrgField.Owners) return userList;
+      else return [];
+    }),
+  };
   const mockUnlinkUsersOrgHelper = {};
 
   beforeEach(async () => {
@@ -100,6 +114,39 @@ describe('OrgService', () => {
       ];
 
       await expect(service.getOrgs()).resolves.toEqual(expectedOrgs);
+    });
+  });
+
+  describe('createOrg', () => {
+    it('should call createOrg with valid org and user and return the created org', async () => {
+      const expectedOrg = {
+        _id: expect.any(String),
+        id: expect.any(String),
+        orgName: 'ABC',
+        owners: ['1'],
+        hopeCreators: [],
+        enabled: true,
+        createdBy: '1',
+        createdAt: expect.any(String),
+      };
+      const createOrgInput: CreateOrgInput = {
+        orgName: 'ABC',
+        owners: ['1'],
+        hopeCreators: [],
+      };
+      const user: UserType = {
+        id: '1',
+        username: 'ariel',
+        firstName: 'Ariel',
+        lastName: 'Veron',
+        isAdmin: true,
+        orgOwnerOf: ['1'],
+        hopeCreatorOf: [],
+      };
+
+      await expect(service.createOrg(createOrgInput, user)).resolves.toEqual(
+        expectedOrg,
+      );
     });
   });
 });
