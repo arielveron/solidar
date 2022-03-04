@@ -24,6 +24,20 @@ describe('OrgService', () => {
         };
       return null;
     }),
+    find: jest.fn(() => {
+      return [
+        {
+          _id: 'dbId',
+          id: '1',
+          orgName: 'Org name',
+          owners: ['1'],
+          hopeCreators: [],
+          enabled: true,
+          createdBy: '1',
+          createdAt: '2022-03-03T21:51:00',
+        },
+      ];
+    }),
   };
   const mockLinkUsersOrgHelper = {};
   const mockUnlinkUsersOrgHelper = {};
@@ -67,6 +81,25 @@ describe('OrgService', () => {
       await expect(service.findOne('2')).resolves.toEqual(expectedOrg);
       await expect(service.findOne('')).resolves.toEqual(expectedOrg);
       await expect(service.findOne(null)).resolves.toEqual(expectedOrg);
+    });
+  });
+
+  describe('getOrgs', () => {
+    it('should call getOrgs without params and return the existing orgs', async () => {
+      const expectedOrgs = [
+        {
+          _id: expect.any(String),
+          id: '1',
+          orgName: 'Org name',
+          owners: ['1'],
+          hopeCreators: [],
+          enabled: true,
+          createdBy: '1',
+          createdAt: expect.any(String),
+        },
+      ];
+
+      await expect(service.getOrgs()).resolves.toEqual(expectedOrgs);
     });
   });
 });
