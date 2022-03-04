@@ -8,7 +8,22 @@ import { OrgService } from './org.service';
 describe('OrgService', () => {
   let service: OrgService;
 
-  const mockOrgRepository = {};
+  const mockOrgRepository = {
+    findOne: jest.fn((org) => {
+      const { id } = org;
+      if (id === '1')
+        return {
+          _id: 'dbId',
+          id: '1',
+          orgName: 'Org name',
+          owners: ['1'],
+          hopeCreators: [],
+          enabled: true,
+          createdBy: '1',
+          createdAt: '2022-03-03T21:51:00',
+        };
+    }),
+  };
   const mockLinkUsersOrgHelper = {};
   const mockUnlinkUsersOrgHelper = {};
 
@@ -27,5 +42,22 @@ describe('OrgService', () => {
 
   it('should be defined', async () => {
     expect(service).toBeDefined();
+  });
+
+  describe('findOne', () => {
+    it('should call findOne with a valid id and return a valid org', async () => {
+      const expectedOrg: Org = {
+        _id: expect.any(String),
+        id: '1',
+        orgName: 'Org name',
+        owners: ['1'],
+        hopeCreators: [],
+        enabled: true,
+        createdBy: '1',
+        createdAt: expect.any(String),
+      };
+
+      await expect(service.findOne('1')).resolves.toEqual(expectedOrg);
+    });
   });
 });
